@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace split_api.Models
 {
-    public partial class Transactions
+    public partial class Transaction
     {
         public Guid Id { get; set; }
         public Guid? Category { get; set; }
@@ -14,9 +14,9 @@ namespace split_api.Models
         public Guid? AccountOut { get; set; }
         public Guid? AccountIn { get; set; }
 
-        public Accounts AccountInNavigation { get; set; }
-        public Accounts AccountOutNavigation { get; set; }
-        public Categories CategoryNavigation { get; set; }
-        public TransactionParties TransactionPartyNavigation { get; set; }
+        public Account AccountInNavigation { get; set; }
+        public Account AccountOutNavigation { get; set; }
+        public Category CategoryNavigation { get; set; }
+        public TransactionParty TransactionPartyNavigation { get; set; }
     }
 }

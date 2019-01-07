@@ -15,14 +15,14 @@ namespace split_api.Models
         {
         }
 
-        public virtual DbSet<Accounts> Accounts { get; set; }
-        public virtual DbSet<Categories> Categories { get; set; }
-        public virtual DbSet<TransactionParties> TransactionParties { get; set; }
-        public virtual DbSet<Transactions> Transactions { get; set; }
+        public virtual DbSet<Account> Accounts { get; set; }
+        public virtual DbSet<Category> Categories { get; set; }
+        public virtual DbSet<TransactionParty> TransactionParties { get; set; }
+        public virtual DbSet<Transaction> Transactions { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Accounts>(entity =>
+            modelBuilder.Entity<Account>(entity =>
             {
                 entity.Property(e => e.Id)
                     .HasColumnName("id")
@@ -33,7 +33,7 @@ namespace split_api.Models
                     .HasColumnName("name");
             });
 
-            modelBuilder.Entity<Categories>(entity =>
+            modelBuilder.Entity<Category>(entity =>
             {
                 entity.Property(e => e.Id)
                     .HasColumnName("id")
@@ -44,9 +44,9 @@ namespace split_api.Models
                 entity.Property(e => e.Name).HasColumnName("name");
             });
 
-            modelBuilder.Entity<TransactionParties>(entity =>
+            modelBuilder.Entity<TransactionParty>(entity =>
             {
-                entity.ToTable("Transaction_Parties");
+                entity.ToTable("Transaction_Party");
 
                 entity.Property(e => e.Id)
                     .HasColumnName("id")
@@ -63,7 +63,7 @@ namespace split_api.Models
                     .HasConstraintName("Transaction_Party_defaultCategory_fkey");
             });
 
-            modelBuilder.Entity<Transactions>(entity =>
+            modelBuilder.Entity<Transaction>(entity =>
             {
                 entity.Property(e => e.Id)
                     .HasColumnName("id")
@@ -88,28 +88,28 @@ namespace split_api.Models
                 entity.Property(e => e.TransactionParty).HasColumnName("transactionParty");
 
                 entity.HasOne(d => d.AccountInNavigation)
-                    .WithMany(p => p.TransactionsAccountInNavigation)
+                    .WithMany(p => p.TransactionAccountInNavigation)
                     .HasForeignKey(d => d.AccountIn)
                     .OnDelete(DeleteBehavior.SetNull)
-                    .HasConstraintName("Transactions_accountOut_fkey");
+                    .HasConstraintName("Transaction_accountIn_fkey");
 
                 entity.HasOne(d => d.AccountOutNavigation)
-                    .WithMany(p => p.TransactionsAccountOutNavigation)
+                    .WithMany(p => p.TransactionAccountOutNavigation)
                     .HasForeignKey(d => d.AccountOut)
                     .OnDelete(DeleteBehavior.SetNull)
-                    .HasConstraintName("Transactions_account_fkey");
+                    .HasConstraintName("Transaction_accountOut_fkey");
 
                 entity.HasOne(d => d.CategoryNavigation)
                     .WithMany(p => p.Transactions)
                     .HasForeignKey(d => d.Category)
                     .OnDelete(DeleteBehavior.SetNull)
-                    .HasConstraintName("Transactions_category_fkey");
+                    .HasConstraintName("Transaction_category_fkey");
 
                 entity.HasOne(d => d.TransactionPartyNavigation)
                     .WithMany(p => p.Transactions)
                     .HasForeignKey(d => d.TransactionParty)
                     .OnDelete(DeleteBehavior.SetNull)
-                    .HasConstraintName("Transactions_transactionParty_fkey");
+                    .HasConstraintName("Transaction_transactionParty_fkey");
             });
         }
     }
