@@ -10,9 +10,9 @@ namespace SplitApi.Controllers
     [ApiController]     
     public class CategoriesController : ControllerBase     
     {        
-        private readonly transactionsContext _context;          
+        private readonly SplitContext _context;          
 
-        public CategoriesController(transactionsContext context)         
+        public CategoriesController(SplitContext context)         
         {             
             _context = context;              
             if (_context.Categories.Count() == 0)             
