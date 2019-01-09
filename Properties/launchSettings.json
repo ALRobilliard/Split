@@ -17,7 +17,7 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "split_api": {
+    "SplitApi": {
       "commandName": "Project",
       "launchBrowser": true,
       "launchUrl": "api/categories",

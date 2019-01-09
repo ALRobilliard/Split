@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 
-namespace split_api.Models
+namespace SplitApi.Models
 {
     public partial class transactionsContext : DbContext
     {
