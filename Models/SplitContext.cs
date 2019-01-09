@@ -4,13 +4,13 @@ using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace SplitApi.Models
 {
-    public partial class transactionsContext : DbContext
+    public partial class SplitContext : DbContext
     {
-        public transactionsContext()
+        public SplitContext()
         {
         }
 
-        public transactionsContext(DbContextOptions<transactionsContext> options)
+        public SplitContext(DbContextOptions<SplitContext> options)
             : base(options)
         {
         }
