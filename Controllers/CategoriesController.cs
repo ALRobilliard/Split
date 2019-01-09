@@ -2,9 +2,9 @@ using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic; 
 using System.Linq; 
 using System;
-using split_api.Models;  
+using SplitApi.Models;  
 
-namespace split_api.Controllers 
+namespace SplitApi.Controllers 
 {     
     [Route("api/[controller]")]     
     [ApiController]     

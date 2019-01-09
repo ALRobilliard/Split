@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace split_api.Models
+namespace SplitApi.Models
 {
     public partial class TransactionParty
     {
