@@ -38,7 +38,7 @@ namespace SplitApi.Controllers
 			return await _context.Accounts.ToListAsync();
 		}
 
-		// GET: api/Accounts/92b5bf46-6697-44b9-b1a4-33e6d09e9c6f
+		// GET: api/Accounts/00000000-0000-0000-0000-000000000000
 		[HttpGet("{id}")]
 		public async Task<ActionResult<Account>> GetAccount(Guid id)
 		{
@@ -63,6 +63,37 @@ namespace SplitApi.Controllers
 			await _context.SaveChangesAsync();
 
 			return CreatedAtAction("GetAccount", new { Id = account.Id }, account);
+		}
+
+		// PUT: api/Accounts/00000000-0000-0000-0000-000000000000
+		[HttpPut("{id}")]
+		public async Task<ActionResult> PutAccount(Guid id, Account account)
+		{
+			if (id != account.Id)
+			{
+				return BadRequest();
+			}
+
+			_context.Entry(account).State = EntityState.Modified;
+			await _context.SaveChangesAsync();
+
+			return NoContent();
+		}
+
+		// DELETE: api/Accounts/00000000-0000-0000-0000-000000000000
+		[HttpDelete("{id}")]
+		public async Task<ActionResult<Account>> DeleteAccount(Guid id)
+		{
+			Account account = await _context.Accounts.FindAsync(id);
+			if (account == null)
+			{
+				return NotFound();
+			}
+
+			_context.Accounts.Remove(account);
+			await _context.SaveChangesAsync();
+
+			return account;
 		}
   	}
 }
