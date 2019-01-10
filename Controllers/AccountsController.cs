@@ -29,6 +29,7 @@ namespace SplitApi.Controllers
 			}
 		}
 
+		[HttpGet]
 		public ActionResult<List<Account>> GetAll()
 		{
 			return _context.Accounts.ToList();
