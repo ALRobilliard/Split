@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 
@@ -19,6 +20,7 @@ namespace SplitApi.Models
         public virtual DbSet<Category> Categories { get; set; }
         public virtual DbSet<TransactionParty> TransactionParties { get; set; }
         public virtual DbSet<Transaction> Transactions { get; set; }
+        public virtual DbSet<User> Users { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
