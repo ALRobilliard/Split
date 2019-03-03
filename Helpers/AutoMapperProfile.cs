@@ -4,12 +4,12 @@ using SplitApi.Models;
 
 namespace SplitApi.Helpers
 {
-    public class AutoMapperProfile : Profile
+  public class AutoMapperProfile : Profile
+  {
+    public AutoMapperProfile()
     {
-        public AutoMapperProfile()
-        {
-            CreateMap<User, UserDto>();
-            CreateMap<UserDto, User>();
-        }
+      CreateMap<User, UserDto>();
+      CreateMap<UserDto, User>();
     }
+  }
 }
