@@ -3,18 +3,22 @@ using System.Collections.Generic;
 
 namespace SplitApi.Models
 {
-    public partial class Account
+  public partial class Account
+  {
+    public Account()
     {
-        public Account()
-        {
-            TransactionAccountInNavigation = new HashSet<Transaction>();
-            TransactionAccountOutNavigation = new HashSet<Transaction>();
-        }
-
-        public Guid Id { get; set; }
-        public string Name { get; set; }
-
-        public ICollection<Transaction> TransactionAccountInNavigation { get; set; }
-        public ICollection<Transaction> TransactionAccountOutNavigation { get; set; }
+      TransactionAccountIn = new HashSet<Transaction>();
+      TransactionAccountOut = new HashSet<Transaction>();
     }
+
+    public Guid AccountId { get; set; }
+    public string AccountName { get; set; }
+    public Guid UserId { get; set; }
+    public DateTime CreatedOn { get; set; }
+    public DateTime ModifiedOn { get; set; }
+
+    public User User { get; set; }
+    public ICollection<Transaction> TransactionAccountIn { get; set; }
+    public ICollection<Transaction> TransactionAccountOut { get; set; }
+  }
 }
