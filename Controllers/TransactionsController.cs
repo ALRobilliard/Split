@@ -23,14 +23,14 @@ namespace SplitApi.Controllers
     [HttpGet]
     public async Task<ActionResult<List<Transaction>>> GetTransactions()
     {
-      return await _context.Transactions.ToListAsync();
+      return await _context.Transaction.ToListAsync();
     }
 
     // GET: api/Transactions/00000000-0000-0000-0000-000000000000
     [HttpGet("{id}")]
     public async Task<ActionResult<Transaction>> GetTransaction(Guid id)
     {
-      Transaction transaction = await _context.Transactions.FindAsync(id);
+      Transaction transaction = await _context.Transaction.FindAsync(id);
       if (transaction == null)
       {
         return NotFound();
@@ -43,7 +43,7 @@ namespace SplitApi.Controllers
     [HttpPost]
     public async Task<ActionResult<Transaction>> PostTransaction(Transaction transaction)
     {
-      _context.Transactions.Add(transaction);
+      _context.Transaction.Add(transaction);
       await _context.SaveChangesAsync();
 
       return CreatedAtAction("GetTransaction", new { Id = transaction.TransactionId }, transaction);
@@ -68,7 +68,7 @@ namespace SplitApi.Controllers
     [HttpDelete("{id}")]
     public async Task<ActionResult<Transaction>> DeleteTransaction(Guid id)
     {
-      Transaction transaction = await _context.Transactions.FindAsync(id);
+      Transaction transaction = await _context.Transaction.FindAsync(id);
       if (transaction == null)
       {
         return NotFound();
