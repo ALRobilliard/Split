@@ -100,21 +100,21 @@ namespace SplitApi.Controllers
     }
 
     // GET: api/Users/00000000-0000-0000-0000-000000000000
-    [HttpGet("{userId}")]
-    public IActionResult GetById(Guid userId)
+    [HttpGet("{id}")]
+    public IActionResult GetById(Guid id)
     {
-      var user = _userService.GetById(userId);
+      var user = _userService.GetById(id);
       var userDto = _mapper.Map<UserDto>(user);
       return Ok(userDto);
     }
 
     // PUT: api/Users/00000000-0000-0000-0000-000000000000
-    [HttpPut("{userId}")]
-    public IActionResult Update(Guid userId, [FromBody]UserDto userDto)
+    [HttpPut("{id}")]
+    public IActionResult Update(Guid id, [FromBody]UserDto userDto)
     {
       // map dto to entity and set id
       var user = _mapper.Map<User>(userDto);
-      user.UserId = userId;
+      user.UserId = id;
 
       try
       {
@@ -130,10 +130,10 @@ namespace SplitApi.Controllers
     }
 
     // DELETE: api/Users/00000000-0000-0000-0000-000000000000
-    [HttpDelete("{userId}")]
-    public IActionResult Delete(Guid userId)
+    [HttpDelete("{id}")]
+    public IActionResult Delete(Guid id)
     {
-      _userService.Delete(userId);
+      _userService.Delete(id);
       return Ok();
     }
   }
