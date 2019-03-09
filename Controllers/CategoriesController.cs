@@ -23,14 +23,14 @@ namespace SplitApi.Controllers
     [HttpGet]
     public async Task<ActionResult<List<Category>>> GetCategories()
     {
-      return await _context.Categories.ToListAsync();
+      return await _context.Category.ToListAsync();
     }
 
     // GET: api/Categories/00000000-0000-0000-0000-000000000000
     [HttpGet("{id}")]
     public async Task<ActionResult<Category>> GetCategory(Guid id)
     {
-      Category category = await _context.Categories.FindAsync(id);
+      Category category = await _context.Category.FindAsync(id);
       if (category == null)
       {
         return NotFound();
@@ -43,7 +43,7 @@ namespace SplitApi.Controllers
     [HttpPost]
     public async Task<ActionResult<Category>> PostCategory(Category category)
     {
-      _context.Categories.Add(category);
+      _context.Category.Add(category);
       await _context.SaveChangesAsync();
 
       return CreatedAtAction("GetCategory", new { Id = category.CategoryId }, category);
@@ -68,13 +68,13 @@ namespace SplitApi.Controllers
     [HttpDelete("{id}")]
     public async Task<ActionResult<Category>> DeleteCategory(Guid id)
     {
-      Category category = await _context.Categories.FindAsync(id);
+      Category category = await _context.Category.FindAsync(id);
       if (category == null)
       {
         return NotFound();
       }
 
-      _context.Categories.Remove(category);
+      _context.Category.Remove(category);
       await _context.SaveChangesAsync();
 
       return category;

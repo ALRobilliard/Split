@@ -23,14 +23,14 @@ namespace SplitApi.Controllers
     [HttpGet]
     public async Task<ActionResult<List<Account>>> GetAccounts()
     {
-      return await _context.Accounts.ToListAsync();
+      return await _context.Account.ToListAsync();
     }
 
     // GET: api/Accounts/00000000-0000-0000-0000-000000000000
     [HttpGet("{id}")]
     public async Task<ActionResult<Account>> GetAccount(Guid id)
     {
-      Account account = await _context.Accounts.FindAsync(id);
+      Account account = await _context.Account.FindAsync(id);
 
       if (account == null)
       {
@@ -44,7 +44,7 @@ namespace SplitApi.Controllers
     [HttpPost]
     public async Task<ActionResult<Account>> PostAccount(Account account)
     {
-      _context.Accounts.Add(account);
+      _context.Account.Add(account);
       await _context.SaveChangesAsync();
 
       return CreatedAtAction("GetAccount", new { Id = account.AccountId }, account);
@@ -69,13 +69,13 @@ namespace SplitApi.Controllers
     [HttpDelete("{id}")]
     public async Task<ActionResult<Account>> DeleteAccount(Guid id)
     {
-      Account account = await _context.Accounts.FindAsync(id);
+      Account account = await _context.Account.FindAsync(id);
       if (account == null)
       {
         return NotFound();
       }
 
-      _context.Accounts.Remove(account);
+      _context.Account.Remove(account);
       await _context.SaveChangesAsync();
 
       return account;

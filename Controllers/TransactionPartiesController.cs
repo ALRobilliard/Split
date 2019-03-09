@@ -20,7 +20,7 @@ namespace SplitApi.Controllers
     [HttpGet]
     public ActionResult<List<TransactionParty>> GetAll()
     {
-      return _context.TransactionParties.ToList();
+      return _context.TransactionParty.ToList();
     }
   }
 }

@@ -22,12 +22,12 @@ namespace SplitApi.Models
       this._connectionString = connectionString;
     }
 
-    public virtual DbSet<Account> Accounts { get; set; }
-    public virtual DbSet<Category> Categories { get; set; }
-    public virtual DbSet<SplitPayment> SplitPayments { get; set; }
-    public virtual DbSet<Transaction> Transactions { get; set; }
-    public virtual DbSet<TransactionParty> TransactionParties { get; set; }
-    public virtual DbSet<User> Users { get; set; }
+    public virtual DbSet<Account> Account { get; set; }
+    public virtual DbSet<Category> Category { get; set; }
+    public virtual DbSet<SplitPayment> SplitPayment { get; set; }
+    public virtual DbSet<Transaction> Transaction { get; set; }
+    public virtual DbSet<TransactionParty> TransactionParty { get; set; }
+    public virtual DbSet<User> User { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {

@@ -30,7 +30,7 @@ namespace SplitApi.Services
       if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
         return null;
 
-      var user = _context.Users.SingleOrDefault(x => x.Username == username);
+      var user = _context.User.SingleOrDefault(x => x.Username == username);
 
       // check if username exists
       if (user == null)
@@ -46,12 +46,12 @@ namespace SplitApi.Services
 
     public IEnumerable<User> GetAll()
     {
-      return _context.Users;
+      return _context.User;
     }
 
     public User GetById(Guid id)
     {
-      return _context.Users.Find(id);
+      return _context.User.Find(id);
     }
 
     public User Create(User user, string password)
@@ -60,10 +60,10 @@ namespace SplitApi.Services
       if (string.IsNullOrWhiteSpace(password))
         throw new AppException("Password is required");
 
-      if (_context.Users.Any(x => x.Username == user.Username))
+      if (_context.User.Any(x => x.Username == user.Username))
         throw new AppException("Username \"" + user.Username + "\" is already taken");
 
-      if (_context.Users.Any(x => x.Email == user.Email))
+      if (_context.User.Any(x => x.Email == user.Email))
         throw new AppException("Email \"" + user.Email + "\" is already in use by another account.");
 
       byte[] passwordHash, passwordSalt;
@@ -72,7 +72,7 @@ namespace SplitApi.Services
       user.PasswordHash = passwordHash;
       user.PasswordSalt = passwordSalt;
 
-      _context.Users.Add(user);
+      _context.User.Add(user);
       _context.SaveChanges();
 
       return user;
@@ -80,7 +80,7 @@ namespace SplitApi.Services
 
     public void Update(User userParam, string password = null)
     {
-      var user = _context.Users.Find(userParam.UserId);
+      var user = _context.User.Find(userParam.UserId);
 
       if (user == null)
         throw new AppException("User not found");
@@ -88,7 +88,7 @@ namespace SplitApi.Services
       if (userParam.Username != user.Username)
       {
         // username has changed so check if the new username is already taken
-        if (_context.Users.Any(x => x.Username == userParam.Username))
+        if (_context.User.Any(x => x.Username == userParam.Username))
           throw new AppException("Username " + userParam.Username + " is already taken");
       }
 
@@ -107,16 +107,16 @@ namespace SplitApi.Services
         user.PasswordSalt = passwordSalt;
       }
 
-      _context.Users.Update(user);
+      _context.User.Update(user);
       _context.SaveChanges();
     }
 
     public void Delete(Guid id)
     {
-      var user = _context.Users.Find(id);
+      var user = _context.User.Find(id);
       if (user != null)
       {
-        _context.Users.Remove(user);
+        _context.User.Remove(user);
         _context.SaveChanges();
       }
     }
