@@ -1,118 +1,295 @@
 ﻿using System;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace SplitApi.Models
 {
-    public partial class SplitContext : DbContext
+  public partial class SplitContext : DbContext
+  {
+    private readonly string _connectionString;
+
+    public SplitContext()
     {
-        public SplitContext()
-        {
-        }
-
-        public SplitContext(DbContextOptions<SplitContext> options)
-            : base(options)
-        {
-        }
-
-        public virtual DbSet<Account> Accounts { get; set; }
-        public virtual DbSet<Category> Categories { get; set; }
-        public virtual DbSet<TransactionParty> TransactionParties { get; set; }
-        public virtual DbSet<Transaction> Transactions { get; set; }
-        public virtual DbSet<User> Users { get; set; }
-
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            modelBuilder.Entity<Account>(entity =>
-            {
-                entity.Property(e => e.Id)
-                    .HasColumnName("id")
-                    .ValueGeneratedNever();
-
-                entity.Property(e => e.Name)
-                    .IsRequired()
-                    .HasColumnName("name");
-            });
-
-            modelBuilder.Entity<Category>(entity =>
-            {
-                entity.Property(e => e.Id)
-                    .HasColumnName("id")
-                    .ValueGeneratedNever();
-
-                entity.Property(e => e.CategoryType).HasColumnName("categoryType");
-
-                entity.Property(e => e.Name).HasColumnName("name");
-            });
-
-            modelBuilder.Entity<TransactionParty>(entity =>
-            {
-                entity.ToTable("Transaction_Party");
-
-                entity.Property(e => e.Id)
-                    .HasColumnName("id")
-                    .ValueGeneratedNever();
-
-                entity.Property(e => e.DefaultCategory).HasColumnName("defaultCategory");
-
-                entity.Property(e => e.Name).HasColumnName("name");
-
-                entity.HasOne(d => d.DefaultCategoryNavigation)
-                    .WithMany(p => p.TransactionParties)
-                    .HasForeignKey(d => d.DefaultCategory)
-                    .OnDelete(DeleteBehavior.SetNull)
-                    .HasConstraintName("Transaction_Party_defaultCategory_fkey");
-            });
-
-            modelBuilder.Entity<Transaction>(entity =>
-            {
-                entity.Property(e => e.Id)
-                    .HasColumnName("id")
-                    .ValueGeneratedNever();
-
-                entity.Property(e => e.AccountIn).HasColumnName("accountIn");
-
-                entity.Property(e => e.AccountOut).HasColumnName("accountOut");
-
-                entity.Property(e => e.Amount)
-                    .HasColumnName("amount")
-                    .HasColumnType("money");
-
-                entity.Property(e => e.Category).HasColumnName("category");
-
-                entity.Property(e => e.Date)
-                    .HasColumnName("date")
-                    .HasColumnType("date");
-
-                entity.Property(e => e.IsShared).HasColumnName("isShared");
-
-                entity.Property(e => e.TransactionParty).HasColumnName("transactionParty");
-
-                entity.HasOne(d => d.AccountInNavigation)
-                    .WithMany(p => p.TransactionAccountInNavigation)
-                    .HasForeignKey(d => d.AccountIn)
-                    .OnDelete(DeleteBehavior.SetNull)
-                    .HasConstraintName("Transaction_accountIn_fkey");
-
-                entity.HasOne(d => d.AccountOutNavigation)
-                    .WithMany(p => p.TransactionAccountOutNavigation)
-                    .HasForeignKey(d => d.AccountOut)
-                    .OnDelete(DeleteBehavior.SetNull)
-                    .HasConstraintName("Transaction_accountOut_fkey");
-
-                entity.HasOne(d => d.CategoryNavigation)
-                    .WithMany(p => p.Transactions)
-                    .HasForeignKey(d => d.Category)
-                    .OnDelete(DeleteBehavior.SetNull)
-                    .HasConstraintName("Transaction_category_fkey");
-
-                entity.HasOne(d => d.TransactionPartyNavigation)
-                    .WithMany(p => p.Transactions)
-                    .HasForeignKey(d => d.TransactionParty)
-                    .OnDelete(DeleteBehavior.SetNull)
-                    .HasConstraintName("Transaction_transactionParty_fkey");
-            });
-        }
     }
+
+    public SplitContext(DbContextOptions<SplitContext> options)
+        : base(options)
+    {
+    }
+
+    public SplitContext(string connectionString)
+    {
+      this._connectionString = connectionString;
+    }
+
+    public virtual DbSet<Account> Accounts { get; set; }
+    public virtual DbSet<Category> Categories { get; set; }
+    public virtual DbSet<SplitPayment> SplitPayments { get; set; }
+    public virtual DbSet<Transaction> Transactions { get; set; }
+    public virtual DbSet<TransactionParty> TransactionParties { get; set; }
+    public virtual DbSet<User> Users { get; set; }
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+      if (!optionsBuilder.IsConfigured)
+      {
+        optionsBuilder.UseNpgsql(this._connectionString);
+      }
+    }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+      modelBuilder.ForNpgsqlHasEnum(null, "categorytype", new[] { "income", "expense" })
+          .HasPostgresExtension("uuid-ossp");
+
+      modelBuilder.Entity<Account>(entity =>
+      {
+        entity.Property(e => e.AccountId)
+                  .HasColumnName("accountId")
+                  .HasDefaultValueSql("uuid_generate_v4()");
+
+        entity.Property(e => e.AccountName)
+                  .IsRequired()
+                  .HasColumnName("accountName")
+                  .HasColumnType("character varying(20)");
+
+        entity.Property(e => e.CreatedOn)
+                  .HasColumnName("createdOn")
+                  .HasColumnType("timestamp with time zone")
+                  .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+        entity.Property(e => e.ModifiedOn)
+                  .HasColumnName("modifiedOn")
+                  .HasColumnType("timestamp with time zone")
+                  .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+        entity.Property(e => e.UserId).HasColumnName("userId");
+
+        entity.HasOne(d => d.User)
+                  .WithMany(p => p.Account)
+                  .HasForeignKey(d => d.UserId)
+                  .HasConstraintName("Account_userId_fkey");
+      });
+
+      modelBuilder.Entity<Category>(entity =>
+      {
+        entity.Property(e => e.CategoryId)
+                  .HasColumnName("categoryId")
+                  .HasDefaultValueSql("uuid_generate_v4()");
+
+        entity.Property(e => e.CategoryName)
+                  .IsRequired()
+                  .HasColumnName("categoryName")
+                  .HasColumnType("character varying(25)");
+
+        entity.Property(e => e.CategoryType).HasColumnName("categoryType");
+
+        entity.Property(e => e.CreatedOn)
+                  .HasColumnName("createdOn")
+                  .HasColumnType("timestamp with time zone")
+                  .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+        entity.Property(e => e.ModifiedOn)
+                  .HasColumnType("timestamp with time zone")
+                  .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+        entity.Property(e => e.UserId).HasColumnName("userId");
+
+        entity.HasOne(d => d.User)
+                  .WithMany(p => p.Category)
+                  .HasForeignKey(d => d.UserId)
+                  .HasConstraintName("Category_userId_fkey");
+      });
+
+      modelBuilder.Entity<SplitPayment>(entity =>
+      {
+        entity.Property(e => e.SplitPaymentId)
+                  .HasColumnName("splitPaymentId")
+                  .HasDefaultValueSql("uuid_generate_v4()");
+
+        entity.Property(e => e.Amount)
+                  .HasColumnName("amount")
+                  .HasColumnType("money");
+
+        entity.Property(e => e.CreatedOn)
+                  .HasColumnName("createdOn")
+                  .HasColumnType("timestamp with time zone")
+                  .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+        entity.Property(e => e.ModifiedOn)
+                  .HasColumnName("modifiedOn")
+                  .HasColumnType("timestamp with time zone")
+                  .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+        entity.Property(e => e.PayeeId).HasColumnName("payeeId");
+
+        entity.Property(e => e.TransactionId).HasColumnName("transactionId");
+
+        entity.HasOne(d => d.Payee)
+                  .WithMany(p => p.SplitPayment)
+                  .HasForeignKey(d => d.PayeeId)
+                  .HasConstraintName("SplitPayment_payeeId_fkey");
+
+        entity.HasOne(d => d.Transaction)
+                  .WithMany(p => p.SplitPayment)
+                  .HasForeignKey(d => d.TransactionId)
+                  .HasConstraintName("SplitPayment_transactionId_fkey");
+      });
+
+      modelBuilder.Entity<Transaction>(entity =>
+      {
+        entity.Property(e => e.TransactionId)
+                  .HasColumnName("transactionId")
+                  .HasDefaultValueSql("uuid_generate_v4()");
+
+        entity.Property(e => e.AccountInId).HasColumnName("accountInId");
+
+        entity.Property(e => e.AccountOutId).HasColumnName("accountOutId");
+
+        entity.Property(e => e.Amount)
+                  .HasColumnName("amount")
+                  .HasColumnType("money");
+
+        entity.Property(e => e.CategoryId).HasColumnName("categoryId");
+
+        entity.Property(e => e.CreatedOn)
+                  .HasColumnName("createdOn")
+                  .HasColumnType("timestamp with time zone")
+                  .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+        entity.Property(e => e.IsShared).HasColumnName("isShared");
+
+        entity.Property(e => e.ModifiedOn)
+                  .HasColumnName("modifiedOn")
+                  .HasColumnType("timestamp with time zone")
+                  .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+        entity.Property(e => e.TransactionDate)
+                  .HasColumnName("transactionDate")
+                  .HasColumnType("date")
+                  .HasDefaultValueSql("CURRENT_DATE");
+
+        entity.Property(e => e.TransactionPartyId).HasColumnName("transactionPartyId");
+
+        entity.Property(e => e.UserId).HasColumnName("userId");
+
+        entity.HasOne(d => d.AccountIn)
+                  .WithMany(p => p.TransactionAccountIn)
+                  .HasForeignKey(d => d.AccountInId)
+                  .HasConstraintName("Transaction_accountInId_fkey");
+
+        entity.HasOne(d => d.AccountOut)
+                  .WithMany(p => p.TransactionAccountOut)
+                  .HasForeignKey(d => d.AccountOutId)
+                  .HasConstraintName("Transaction_accountOutId_fkey");
+
+        entity.HasOne(d => d.Category)
+                  .WithMany(p => p.Transaction)
+                  .HasForeignKey(d => d.CategoryId)
+                  .OnDelete(DeleteBehavior.SetNull)
+                  .HasConstraintName("Transaction_categoryId_fkey");
+
+        entity.HasOne(d => d.TransactionParty)
+                  .WithMany(p => p.Transaction)
+                  .HasForeignKey(d => d.TransactionPartyId)
+                  .OnDelete(DeleteBehavior.SetNull)
+                  .HasConstraintName("Transaction_transactionPartyId_fkey");
+
+        entity.HasOne(d => d.User)
+                  .WithMany(p => p.Transaction)
+                  .HasForeignKey(d => d.UserId)
+                  .OnDelete(DeleteBehavior.Cascade)
+                  .HasConstraintName("Transaction_userId_fkey");
+      });
+
+      modelBuilder.Entity<TransactionParty>(entity =>
+      {
+        entity.Property(e => e.TransactionPartyId)
+                  .HasColumnName("transactionPartyId")
+                  .HasDefaultValueSql("uuid_generate_v4()");
+
+        entity.Property(e => e.CreatedOn)
+                  .HasColumnName("createdOn")
+                  .HasColumnType("timestamp with time zone")
+                  .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+        entity.Property(e => e.DefaultCategoryId).HasColumnName("defaultCategoryId");
+
+        entity.Property(e => e.ModifiedOn)
+                  .HasColumnName("modifiedOn")
+                  .HasColumnType("timestamp with time zone")
+                  .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+        entity.Property(e => e.TransactionPartyName)
+                  .IsRequired()
+                  .HasColumnName("transactionPartyName")
+                  .HasColumnType("character varying(25)");
+
+        entity.HasOne(d => d.DefaultCategory)
+                  .WithMany(p => p.TransactionParty)
+                  .HasForeignKey(d => d.DefaultCategoryId)
+                  .OnDelete(DeleteBehavior.SetNull)
+                  .HasConstraintName("TransactionParty_defaultCategoryId_fkey");
+      });
+
+      modelBuilder.Entity<User>(entity =>
+      {
+        entity.HasIndex(e => e.Email)
+                  .HasName("User_email_key")
+                  .IsUnique();
+
+        entity.HasIndex(e => e.Username)
+                  .HasName("User_username_key")
+                  .IsUnique();
+
+        entity.Property(e => e.UserId)
+                  .HasColumnName("userId")
+                  .HasDefaultValueSql("uuid_generate_v4()");
+
+        entity.Property(e => e.ConfirmedEmail)
+                  .HasColumnName("confirmedEmail")
+                  .HasDefaultValueSql("false");
+
+        entity.Property(e => e.CreatedOn)
+                  .HasColumnName("createdOn")
+                  .HasColumnType("timestamp with time zone")
+                  .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+        entity.Property(e => e.Email)
+                  .IsRequired()
+                  .HasColumnName("email")
+                  .HasColumnType("character varying(50)");
+
+        entity.Property(e => e.FirstName)
+                  .HasColumnName("firstName")
+                  .HasColumnType("character varying(50)");
+
+        entity.Property(e => e.IsRegistered)
+                  .HasColumnName("isRegistered")
+                  .HasDefaultValueSql("true");
+
+        entity.Property(e => e.LastLogin)
+                  .HasColumnName("lastLogin")
+                  .HasColumnType("timestamp with time zone");
+
+        entity.Property(e => e.LastName)
+                  .HasColumnName("lastName")
+                  .HasColumnType("character varying(50)");
+
+        entity.Property(e => e.ModifiedOn)
+                  .HasColumnName("modifiedOn")
+                  .HasColumnType("timestamp with time zone")
+                  .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+        entity.Property(e => e.PasswordHash).HasColumnName("passwordHash");
+
+        entity.Property(e => e.PasswordSalt).HasColumnName("passwordSalt");
+
+        entity.Property(e => e.Username)
+                  .IsRequired()
+                  .HasColumnName("username")
+                  .HasColumnType("character varying(20)");
+      });
+    }
+  }
 }
