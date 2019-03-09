@@ -13,10 +13,10 @@ namespace SplitApi.Models
 
     public Guid CategoryId { get; set; }
     public string CategoryName { get; set; }
-    public string CategoryType { get; set; }
     public DateTime CreatedOn { get; set; }
     public DateTime ModifiedOn { get; set; }
     public Guid UserId { get; set; }
+    public bool CategoryType { get; set; }
 
     public User User { get; set; }
     public ICollection<Transaction> Transaction { get; set; }
