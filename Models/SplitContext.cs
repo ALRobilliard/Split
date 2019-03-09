@@ -6,7 +6,7 @@ namespace SplitApi.Models
 {
   public partial class SplitContext : DbContext
   {
-    private readonly string connectionString;
+    private readonly string _connectionString;
 
     public SplitContext()
     {
@@ -17,9 +17,9 @@ namespace SplitApi.Models
     {
     }
 
-    public SplitContext(string connectionString) : base()
+    public SplitContext(string connectionString)
     {
-      this.connectionString = connectionString;
+      this._connectionString = connectionString;
     }
 
     public virtual DbSet<Account> Accounts { get; set; }
@@ -33,12 +33,15 @@ namespace SplitApi.Models
     {
       if (!optionsBuilder.IsConfigured)
       {
-        optionsBuilder.UseNpgsql(this.connectionString);
+        optionsBuilder.UseNpgsql(this._connectionString);
       }
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+      modelBuilder.ForNpgsqlHasEnum(null, "categorytype", new[] { "income", "expense" })
+          .HasPostgresExtension("uuid-ossp");
+
       modelBuilder.Entity<Account>(entity =>
       {
         entity.Property(e => e.AccountId)
@@ -79,10 +82,7 @@ namespace SplitApi.Models
                   .HasColumnName("categoryName")
                   .HasColumnType("character varying(25)");
 
-        entity.Property(e => e.CategoryType)
-                  .IsRequired()
-                  .HasColumnName("categoryType")
-                  .HasColumnType("character varying(10)");
+        entity.Property(e => e.CategoryType).HasColumnName("categoryType");
 
         entity.Property(e => e.CreatedOn)
                   .HasColumnName("createdOn")
