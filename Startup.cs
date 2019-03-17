@@ -58,16 +58,16 @@ namespace SplitApi
         {
           OnTokenValidated = context =>
                 {
-                var userService = context.HttpContext.RequestServices.GetRequiredService<IUserService>();
-                var userId = Guid.Parse(context.Principal.Identity.Name);
-                var user = userService.GetById(userId);
-                if (user == null)
-                {
-                        // Return unauthorized if user no longer exists.
-                        context.Fail("Unauthorized");
+                  var userService = context.HttpContext.RequestServices.GetRequiredService<IUserService>();
+                  var username = context.Principal.Identity.Name;
+                  var user = userService.GetByUsername(username);
+                  if (user == null)
+                  {
+                    // Return unauthorized if user no longer exists.
+                    context.Fail("Unauthorized");
+                  }
+                  return Task.CompletedTask;
                 }
-                return Task.CompletedTask;
-              }
         };
         x.RequireHttpsMetadata = false;
         x.SaveToken = true;
