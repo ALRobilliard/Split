@@ -8,6 +8,8 @@ namespace SplitApi.Helpers
   {
     public AutoMapperProfile()
     {
+      CreateMap<Account, AccountDto>();
+      CreateMap<AccountDto, Account>();
       CreateMap<User, UserDto>();
       CreateMap<UserDto, User>();
     }
