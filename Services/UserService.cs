@@ -11,6 +11,7 @@ namespace SplitApi.Services
     User Authenticate(string username, string password);
     IEnumerable<User> GetAll();
     User GetById(Guid id);
+    User GetByUsername(string username);
     User Create(User user, string password);
     void Update(User user, string password = null);
     void Delete(Guid id);
@@ -52,6 +53,11 @@ namespace SplitApi.Services
     public User GetById(Guid id)
     {
       return _context.User.Find(id);
+    }
+
+    public User GetByUsername(string username)
+    {
+      return _context.User.Where(u => u.Username.Equals(username)).Single();
     }
 
     public User Create(User user, string password)
