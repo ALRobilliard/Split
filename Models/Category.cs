@@ -22,4 +22,10 @@ namespace SplitApi.Models
     public ICollection<Transaction> Transaction { get; set; }
     public ICollection<TransactionParty> TransactionParty { get; set; }
   }
+
+  public static class CategoryTypes
+  {
+    public const bool Expense = true;
+    public const bool Income = false;
+  }
 }
