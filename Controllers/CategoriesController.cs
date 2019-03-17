@@ -1,61 +1,105 @@
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 using System;
+using System.Security.Claims;
 using System.Threading.Tasks;
+using AutoMapper;
+using SplitApi.Dtos;
+using SplitApi.Extensions;
+using SplitApi.Helpers;
 using SplitApi.Models;
 
 namespace SplitApi.Controllers
 {
+  [Authorize]
   [Route("api/[controller]")]
   [ApiController]
   public class CategoriesController : ControllerBase
   {
     private readonly SplitContext _context;
+    private IMapper _mapper;
 
-    public CategoriesController(SplitContext context)
+    public CategoriesController(IMapper mapper, SplitContext context)
     {
+      _mapper = mapper;
       _context = context;
     }
 
     // GET: api/Categories
     [HttpGet]
-    public async Task<ActionResult<List<Category>>> GetCategories()
+    public async Task<ActionResult<List<CategoryDto>>> GetCategories()
     {
-      return await _context.Category.ToListAsync();
+      List<Category> categories = null;
+      ClaimsIdentity identity = HttpContext.User.Identity as ClaimsIdentity;
+      Guid? userId = identity.GetUserId();
+
+      if (userId != null)
+      {
+        categories = await _context.Category.Where(c => c.UserId.Equals(userId)).ToListAsync();
+      }
+
+      return _mapper.Map<List<CategoryDto>>(categories);
     }
 
     // GET: api/Categories/00000000-0000-0000-0000-000000000000
     [HttpGet("{id}")]
-    public async Task<ActionResult<Category>> GetCategory(Guid id)
+    public async Task<ActionResult<CategoryDto>> GetCategory(Guid id)
     {
+      ClaimsIdentity identity = HttpContext.User.Identity as ClaimsIdentity;
+      Guid? userId = identity.GetUserId();
+
       Category category = await _context.Category.FindAsync(id);
+
       if (category == null)
       {
         return NotFound();
       }
 
-      return category;
+      if (category.UserId != userId)
+      {
+        return Unauthorized();
+      }
+
+      return _mapper.Map<CategoryDto>(category);
     }
 
     // POST: api/Categories
     [HttpPost]
-    public async Task<ActionResult<Category>> PostCategory(Category category)
+    public async Task<ActionResult<CategoryDto>> PostCategory(Category category)
     {
+      ClaimsIdentity identity = HttpContext.User.Identity as ClaimsIdentity;
+      Guid? userId = identity.GetUserId();
+
+      category.UserId = userId.Value;
+
       _context.Category.Add(category);
       await _context.SaveChangesAsync();
 
-      return CreatedAtAction("GetCategory", new { Id = category.CategoryId }, category);
+      CategoryDto categoryDto = _mapper.Map<CategoryDto>(category);
+      return CreatedAtAction("GetCategory", new { Id = category.CategoryId }, categoryDto);
     }
 
     // PUT: api/Categories/00000000-0000-0000-0000-000000000000
     [HttpPut("{id}")]
-    public async Task<ActionResult> PutCategory(Guid id, Category category)
+    public async Task<ActionResult> PutCategory(Guid id, CategoryDto categoryDto)
     {
-      if (id != category.CategoryId)
+      ClaimsIdentity identity = HttpContext.User.Identity as ClaimsIdentity;
+      Guid? userId = identity.GetUserId();
+
+      if (id != categoryDto.CategoryId)
       {
         return BadRequest();
+      }
+
+      Category category = _mapper.Map<Category>(categoryDto);
+
+      if (category.UserId != userId)
+      {
+        return Unauthorized();
       }
 
       _context.Entry(category).State = EntityState.Modified;
@@ -68,10 +112,18 @@ namespace SplitApi.Controllers
     [HttpDelete("{id}")]
     public async Task<ActionResult<Category>> DeleteCategory(Guid id)
     {
+      ClaimsIdentity identity = HttpContext.User.Identity as ClaimsIdentity;
+      Guid? userId = identity.GetUserId();
+
       Category category = await _context.Category.FindAsync(id);
       if (category == null)
       {
         return NotFound();
+      }
+
+      if (category.UserId != userId)
+      {
+        return Unauthorized();
       }
 
       _context.Category.Remove(category);
