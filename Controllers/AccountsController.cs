@@ -1,99 +1,138 @@
-using Microsoft.AspNetCore.Mvc; 
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic; 
-using System.Linq; 
+using System.Collections.Generic;
+using System.Linq;
 using System;
+using System.Security.Claims;
 using System.Threading.Tasks;
-using SplitApi.Models;  
+using SplitApi.Models;
+using SplitApi.Dtos;
+using SplitApi.Extensions;
+using AutoMapper;
 
 namespace SplitApi.Controllers
 {
-	[Route("api/[controller]")]
-	[ApiController]
-  	public class AccountsController : ControllerBase
-  	{
-		private readonly SplitContext _context;
+  [Authorize]
+  [Route("api/[controller]")]
+  [ApiController]
+  public class AccountsController : ControllerBase
+  {
+    private readonly SplitContext _context;
+    private IMapper _mapper;
 
-		public AccountsController (SplitContext context)
-		{
-			_context = context;
+    public AccountsController(IMapper mapper, SplitContext context)
+    {
+      _mapper = mapper;
+      _context = context;
+    }
 
-			if (_context.Accounts.Count() == 0)
-			{
-				Account sampleAccount = new Account
-				{
-					Id = Guid.NewGuid(),
-					Name = "Sample Account"
-				};
+    // GET: api/Accounts
+    [HttpGet]
+    public async Task<ActionResult<List<AccountDto>>> GetAccounts()
+    {
+      List<Account> accounts = null;
 
-				_context.Accounts.Add(sampleAccount);
-				_context.SaveChanges();
-			}
-		}
+      ClaimsIdentity identity = HttpContext.User.Identity as ClaimsIdentity;
+      Guid? userId = identity.GetUserId();
+      if (userId != null)
+      {
+        accounts = await _context.Account.Where(a => a.UserId.Equals(userId)).ToListAsync();
+      }
 
-		// GET: api/Accounts
-		[HttpGet]
-		public async Task<ActionResult<List<Account>>> GetAccounts()
-		{
-			return await _context.Accounts.ToListAsync();
-		}
+      return _mapper.Map<List<AccountDto>>(accounts);
+    }
 
-		// GET: api/Accounts/00000000-0000-0000-0000-000000000000
-		[HttpGet("{id}")]
-		public async Task<ActionResult<Account>> GetAccount(Guid id)
-		{
-			Account account = await _context.Accounts.FindAsync(id);
+    // GET: api/Accounts/00000000-0000-0000-0000-000000000000
+    [HttpGet("{id}")]
+    public async Task<ActionResult<AccountDto>> GetAccount(Guid id)
+    {
+      Account account = await _context.Account.FindAsync(id);
+      ClaimsIdentity identity = HttpContext.User.Identity as ClaimsIdentity;
+      Guid? userId = identity.GetUserId();
 
-			if (account == null)
-			{
-				return NotFound();
-			}
+      if (account == null)
+      {
+        return NotFound();
+      }
 
-			return account;
-		}
+      if (account.UserId != userId)
+      {
+        return Unauthorized();
+      }
 
-		// POST: api/Accounts
-		[HttpPost]
-		public async Task<ActionResult<Account>> PostAccount(Account account)
-		{
-			// Overwrite the ID with a new GUID for the Account to be inserted.
-			account.Id = Guid.NewGuid();
+      return _mapper.Map<AccountDto>(account);
+    }
 
-			_context.Accounts.Add(account);
-			await _context.SaveChangesAsync();
+    // POST: api/Accounts
+    [HttpPost]
+    public async Task<ActionResult<AccountDto>> PostAccount([FromBody] string accountName)
+    {
+      ClaimsIdentity identity = HttpContext.User.Identity as ClaimsIdentity;
+      Guid? userId = identity.GetUserId();
 
-			return CreatedAtAction("GetAccount", new { Id = account.Id }, account);
-		}
+      Account account = new Account();
+      account.AccountName = accountName;
 
-		// PUT: api/Accounts/00000000-0000-0000-0000-000000000000
-		[HttpPut("{id}")]
-		public async Task<ActionResult> PutAccount(Guid id, Account account)
-		{
-			if (id != account.Id)
-			{
-				return BadRequest();
-			}
+      // Add owning user.
+      account.UserId = userId.Value;
 
-			_context.Entry(account).State = EntityState.Modified;
-			await _context.SaveChangesAsync();
+      _context.Account.Add(account);
+      await _context.SaveChangesAsync();
 
-			return NoContent();
-		}
+      AccountDto accountDto = _mapper.Map<AccountDto>(account);
+      return CreatedAtAction("GetAccount", new { Id = account.AccountId }, accountDto);
+    }
 
-		// DELETE: api/Accounts/00000000-0000-0000-0000-000000000000
-		[HttpDelete("{id}")]
-		public async Task<ActionResult<Account>> DeleteAccount(Guid id)
-		{
-			Account account = await _context.Accounts.FindAsync(id);
-			if (account == null)
-			{
-				return NotFound();
-			}
+    // PUT: api/Accounts/00000000-0000-0000-0000-000000000000
+    [HttpPut("{id}")]
+    public async Task<ActionResult> PutAccount(Guid id, AccountDto accountDto)
+    {
+      ClaimsIdentity identity = HttpContext.User.Identity as ClaimsIdentity;
+      Guid? userId = identity.GetUserId();
 
-			_context.Accounts.Remove(account);
-			await _context.SaveChangesAsync();
+      if (id != accountDto.AccountId)
+      {
+        return BadRequest();
+      }
 
-			return account;
-		}
-  	}
+      Account account = _mapper.Map<Account>(accountDto);
+
+      if (account.UserId != userId)
+      {
+        return Unauthorized();
+      }
+
+      _context.Entry(account).State = EntityState.Modified;
+      await _context.SaveChangesAsync();
+
+      return NoContent();
+    }
+
+    // DELETE: api/Accounts/00000000-0000-0000-0000-000000000000
+    [HttpDelete("{id}")]
+    public async Task<ActionResult<Account>> DeleteAccount(Guid id)
+    {
+      ClaimsIdentity identity = HttpContext.User.Identity as ClaimsIdentity;
+      Guid? userId = identity.GetUserId();
+
+      Account account = await _context.Account.FindAsync(id);
+
+      if (account == null)
+      {
+        return NotFound();
+      }
+
+      if (account.UserId != userId)
+      {
+        return Unauthorized();
+      }
+
+      _context.Account.Remove(account);
+      await _context.SaveChangesAsync();
+
+      return account;
+    }
+  }
 }
