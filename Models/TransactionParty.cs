@@ -3,18 +3,20 @@ using System.Collections.Generic;
 
 namespace SplitApi.Models
 {
-    public partial class TransactionParty
+  public partial class TransactionParty
+  {
+    public TransactionParty()
     {
-        public TransactionParty()
-        {
-            Transactions = new HashSet<Transaction>();
-        }
-
-        public Guid Id { get; set; }
-        public string Name { get; set; }
-        public Guid? DefaultCategory { get; set; }
-
-        public Category DefaultCategoryNavigation { get; set; }
-        public ICollection<Transaction> Transactions { get; set; }
+      Transaction = new HashSet<Transaction>();
     }
+
+    public Guid TransactionPartyId { get; set; }
+    public string TransactionPartyName { get; set; }
+    public Guid? DefaultCategoryId { get; set; }
+    public DateTime CreatedOn { get; set; }
+    public DateTime ModifiedOn { get; set; }
+
+    public Category DefaultCategory { get; set; }
+    public ICollection<Transaction> Transaction { get; set; }
+  }
 }
