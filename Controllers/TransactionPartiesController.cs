@@ -1,61 +1,38 @@
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System.Linq;
+using Microsoft.AspNetCore.Mvc; 
+using System.Collections.Generic; 
+using System.Linq; 
 using System;
-using System.Threading.Tasks;
-using AutoMapper;
-using SplitApi.Dtos;
-using SplitApi.Extensions;
-using SplitApi.Helpers;
-using SplitApi.Models;
+using SplitApi.Models;  
 
-namespace SplitApi.Controllers
+namespace SplitApi.Controllers 
 {
-  [Authorize]
-  [Route("api/[controller]")]
-  [ApiController]
-  public class TransactionPartiesController : ControllerBase
-  {
-    private IMapper _mapper;
-    private readonly SplitContext _context;
+	[Route("api/[controller]")]
+	[ApiController]
+	public class TransactionPartiesController : ControllerBase
+	{
+		private readonly SplitContext _context;
 
-    public TransactionPartiesController(IMapper mapper, SplitContext context)
-    {
-      _mapper = mapper;
-      _context = context;
-    }
+		public TransactionPartiesController(SplitContext context)
+		{
+			_context = context;
 
-    // GET: api/TransactionParties
-    [HttpGet]
-    public async Task<ActionResult<List<TransactionPartyDto>>> GetAll()
-    {
-      List<TransactionParty> transactionParties = await _context.TransactionParty.ToListAsync();
-      return _mapper.Map<List<TransactionPartyDto>>(transactionParties);
-    }
+			if (_context.TransactionParties.Count() == 0)
+			{
+				TransactionParty sampleTransactionParty = new TransactionParty
+				{
+					Id = new Guid(),
+					Name = "Sample Transaction Party"
+				};
 
-    // POST: api/TransactionParties/search
-    [HttpPost("search")]
-    public async Task<ActionResult<List<TransactionPartyDto>>> GetByName([FromBody] string transactionPartyName)
-    {
-      List<TransactionParty> transactionParties = await _context.TransactionParty.Where(
-        tp => tp.TransactionPartyName.StartsWith(transactionPartyName)
-        ).ToListAsync();
-      return _mapper.Map<List<TransactionPartyDto>>(transactionParties);
-    }
+				_context.TransactionParties.Add(sampleTransactionParty);
+				_context.SaveChanges();
+			}
+		}
 
-
-    // POST: api/TransactionParties
-    [HttpPost]
-    public async Task<ActionResult<TransactionPartyDto>> PostTransactionParty(TransactionPartyDto transactionPartyDto)
-    {
-      TransactionParty transactionParty = _mapper.Map<TransactionParty>(transactionPartyDto);
-      _context.TransactionParty.Add(transactionParty);
-      await _context.SaveChangesAsync();
-
-      return CreatedAtAction("GetCategory", new { Id = transactionParty.TransactionPartyId }, transactionPartyDto);
-    }
-  }
+		[HttpGet]
+		public ActionResult<List<TransactionParty>> GetAll()
+		{
+			return _context.TransactionParties.ToList();
+		}
+	}
 }

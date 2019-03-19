@@ -7,30 +7,18 @@ using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using SplitApi.Models;
 
 namespace SplitApi
 {
-  public class Program
-  {
-    public static void Main(string[] args)
+    public class Program
     {
-      CreateWebHostBuilder(args).Build().Run();
+        public static void Main(string[] args)
+        {
+            CreateWebHostBuilder(args).Build().Run();
+        }
 
-      var builder = new ConfigurationBuilder()
-            .SetBasePath(Directory.GetCurrentDirectory())
-            .AddJsonFile("appsettings.json");
-
-      var configuration = builder.Build();
-
-      using (var db = new SplitContext(configuration.GetConnectionString("DefaultConnection")))
-      {
-        //Todo use db
-      }
+        public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
+            WebHost.CreateDefaultBuilder(args)
+                .UseStartup<Startup>();
     }
-
-    public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
-        WebHost.CreateDefaultBuilder(args)
-            .UseStartup<Startup>();
-  }
 }

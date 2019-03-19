@@ -1,135 +1,98 @@
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc; 
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System.Linq;
+using System.Collections.Generic; 
+using System.Linq; 
 using System;
-using System.Security.Claims;
 using System.Threading.Tasks;
-using AutoMapper;
-using SplitApi.Dtos;
-using SplitApi.Extensions;
-using SplitApi.Helpers;
-using SplitApi.Models;
+using SplitApi.Models;  
 
-namespace SplitApi.Controllers
-{
-  [Authorize]
-  [Route("api/[controller]")]
-  [ApiController]
-  public class CategoriesController : ControllerBase
-  {
-    private readonly SplitContext _context;
-    private IMapper _mapper;
+namespace SplitApi.Controllers 
+{     
+    [Route("api/[controller]")]     
+    [ApiController]     
+    public class CategoriesController : ControllerBase     
+    {        
+        private readonly SplitContext _context;          
 
-    public CategoriesController(IMapper mapper, SplitContext context)
-    {
-      _mapper = mapper;
-      _context = context;
-    }
+        public CategoriesController(SplitContext context)         
+        {             
+            _context = context;              
+            if (_context.Categories.Count() == 0)             
+            {                 
+                Category sampleCategory = new Category 
+                {
+                    Id = Guid.NewGuid(),
+                    Name = "Sample Category",
+                    CategoryType = "Expense"
+                };
 
-    // GET: api/Categories
-    [HttpGet]
-    public async Task<ActionResult<List<CategoryDto>>> GetCategories()
-    {
-      List<Category> categories = null;
-      ClaimsIdentity identity = HttpContext.User.Identity as ClaimsIdentity;
-      Guid? userId = identity.GetUserId();
+                _context.Categories.Add(sampleCategory);                 
+                _context.SaveChanges();             
+            }         
+        }
 
-      if (userId != null)
-      {
-        categories = await _context.Category.Where(c => c.UserId.Equals(userId)).ToListAsync();
-      }
+        // GET: api/Categories
+        [HttpGet]
+        public async Task<ActionResult<List<Category>>> GetCategories() 
+        {
+            return await _context.Categories.ToListAsync();
+        }
+        
+        // GET: api/Categories/00000000-0000-0000-0000-000000000000
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Category>> GetCategory(Guid id)
+        {
+            Category category = await _context.Categories.FindAsync(id);
+            if (category == null)
+            {
+                return NotFound();
+            }
 
-      return _mapper.Map<List<CategoryDto>>(categories);
-    }
+            return category;
+        }
 
-    // GET: api/Categories/00000000-0000-0000-0000-000000000000
-    [HttpGet("{id}")]
-    public async Task<ActionResult<CategoryDto>> GetCategory(Guid id)
-    {
-      ClaimsIdentity identity = HttpContext.User.Identity as ClaimsIdentity;
-      Guid? userId = identity.GetUserId();
+        // POST: api/Categories
+        [HttpPost]
+        public async Task<ActionResult<Category>> PostCategory(Category category)
+        {
+            // Overwrite the ID with a new GUID for the Category to be inserted.
+            category.Id = Guid.NewGuid();
 
-      Category category = await _context.Category.FindAsync(id);
+            _context.Categories.Add(category);
+            await _context.SaveChangesAsync();
 
-      if (category == null)
-      {
-        return NotFound();
-      }
+            return CreatedAtAction("GetCategory", new { Id = category.Id }, category);
+        }
 
-      if (category.UserId != userId)
-      {
-        return Unauthorized();
-      }
+        // PUT: api/Categories/00000000-0000-0000-0000-000000000000
+        [HttpPut("{id}")]
+        public async Task<ActionResult> PutCategory(Guid id, Category category)
+        {
+            if (id != category.Id)
+            {
+                return BadRequest();
+            }
 
-      return _mapper.Map<CategoryDto>(category);
-    }
+            _context.Entry(category).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
 
-    // POST: api/Categories
-    [HttpPost]
-    public async Task<ActionResult<CategoryDto>> PostCategory(Category category)
-    {
-      ClaimsIdentity identity = HttpContext.User.Identity as ClaimsIdentity;
-      Guid? userId = identity.GetUserId();
+            return NoContent();
+        }
 
-      category.UserId = userId.Value;
+        // DELETE: api/Categories/00000000-0000-0000-0000-000000000000
+        [HttpDelete("{id}")]
+        public async Task<ActionResult<Category>> DeleteCategory(Guid id)
+        {
+            Category category = await _context.Categories.FindAsync(id);
+            if (category == null)
+            {
+                return NotFound();
+            }
 
-      _context.Category.Add(category);
-      await _context.SaveChangesAsync();
+            _context.Categories.Remove(category);
+            await _context.SaveChangesAsync();
 
-      CategoryDto categoryDto = _mapper.Map<CategoryDto>(category);
-      return CreatedAtAction("GetCategory", new { Id = category.CategoryId }, categoryDto);
-    }
-
-    // PUT: api/Categories/00000000-0000-0000-0000-000000000000
-    [HttpPut("{id}")]
-    public async Task<ActionResult> PutCategory(Guid id, CategoryDto categoryDto)
-    {
-      ClaimsIdentity identity = HttpContext.User.Identity as ClaimsIdentity;
-      Guid? userId = identity.GetUserId();
-
-      if (id != categoryDto.CategoryId)
-      {
-        return BadRequest();
-      }
-
-      Category category = _mapper.Map<Category>(categoryDto);
-
-      if (category.UserId != userId)
-      {
-        return Unauthorized();
-      }
-
-      _context.Entry(category).State = EntityState.Modified;
-      await _context.SaveChangesAsync();
-
-      return NoContent();
-    }
-
-    // DELETE: api/Categories/00000000-0000-0000-0000-000000000000
-    [HttpDelete("{id}")]
-    public async Task<ActionResult<Category>> DeleteCategory(Guid id)
-    {
-      ClaimsIdentity identity = HttpContext.User.Identity as ClaimsIdentity;
-      Guid? userId = identity.GetUserId();
-
-      Category category = await _context.Category.FindAsync(id);
-      if (category == null)
-      {
-        return NotFound();
-      }
-
-      if (category.UserId != userId)
-      {
-        return Unauthorized();
-      }
-
-      _context.Category.Remove(category);
-      await _context.SaveChangesAsync();
-
-      return category;
-    }
-  }
+            return category;
+        }
+    } 
 }
