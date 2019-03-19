@@ -12,6 +12,8 @@ namespace SplitApi.Helpers
       CreateMap<AccountDto, Account>();
       CreateMap<Category, CategoryDto>();
       CreateMap<CategoryDto, Category>();
+      CreateMap<Transaction, TransactionDto>();
+      CreateMap<TransactionDto, Transaction>();
       CreateMap<TransactionParty, TransactionPartyDto>();
       CreateMap<TransactionPartyDto, TransactionParty>();
       CreateMap<User, UserDto>();
