@@ -15,6 +15,7 @@ using SplitApi.Models;
 
 namespace SplitApi.Controllers
 {
+  [Authorize]
   [Route("api/[controller]")]
   [ApiController]
   public class TransactionsController : ControllerBase
