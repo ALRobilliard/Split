@@ -69,17 +69,18 @@ namespace SplitApi.Controllers
 
     // POST: api/Categories
     [HttpPost]
-    public async Task<ActionResult<CategoryDto>> PostCategory(Category category)
+    public async Task<ActionResult<CategoryDto>> PostCategory(CategoryDto categoryDto)
     {
       ClaimsIdentity identity = HttpContext.User.Identity as ClaimsIdentity;
       Guid? userId = identity.GetUserId();
 
-      category.UserId = userId.Value;
+      categoryDto.UserId = userId.Value;
+
+      Category category = _mapper.Map<Category>(categoryDto);
 
       _context.Category.Add(category);
       await _context.SaveChangesAsync();
 
-      CategoryDto categoryDto = _mapper.Map<CategoryDto>(category);
       return CreatedAtAction("GetCategory", new { Id = category.CategoryId }, categoryDto);
     }
 

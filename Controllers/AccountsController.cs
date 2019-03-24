@@ -112,7 +112,7 @@ namespace SplitApi.Controllers
 
     // DELETE: api/Accounts/00000000-0000-0000-0000-000000000000
     [HttpDelete("{id}")]
-    public async Task<ActionResult<Account>> DeleteAccount(Guid id)
+    public async Task<ActionResult<AccountDto>> DeleteAccount(Guid id)
     {
       ClaimsIdentity identity = HttpContext.User.Identity as ClaimsIdentity;
       Guid? userId = identity.GetUserId();
@@ -132,7 +132,9 @@ namespace SplitApi.Controllers
       _context.Account.Remove(account);
       await _context.SaveChangesAsync();
 
-      return account;
+      AccountDto accountDto = _mapper.Map<AccountDto>(account);
+
+      return accountDto;
     }
   }
 }

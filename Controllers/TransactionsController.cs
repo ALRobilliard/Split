@@ -72,36 +72,39 @@ namespace SplitApi.Controllers
 
     // POST: api/Transactions
     [HttpPost]
-    public async Task<ActionResult<TransactionDto>> PostTransaction(Transaction transaction)
+    public async Task<ActionResult<TransactionDto>> PostTransaction(TransactionDto transactionDto)
     {
       ClaimsIdentity identity = HttpContext.User.Identity as ClaimsIdentity;
       Guid? userId = identity.GetUserId();
 
-      transaction.UserId = userId;
+      transactionDto.UserId = userId.Value;
+
+      Transaction transaction = _mapper.Map<Transaction>(transactionDto);
 
       _context.Transaction.Add(transaction);
       await _context.SaveChangesAsync();
 
-      TransactionDto transactionDto = _mapper.Map<TransactionDto>(transaction);
       return CreatedAtAction("GetTransaction", new { Id = transaction.TransactionId }, transactionDto);
     }
 
     // PUT: api/Transactions/00000000-0000-0000-0000-000000000000
     [HttpPut("{id}")]
-    public async Task<ActionResult> PutTransaction(Guid id, Transaction transaction)
+    public async Task<ActionResult> PutTransaction(Guid id, TransactionDto transactionDto)
     {
       ClaimsIdentity identity = HttpContext.User.Identity as ClaimsIdentity;
       Guid? userId = identity.GetUserId();
 
-      if (id != transaction.TransactionId)
+      if (id != transactionDto.TransactionId)
       {
         return BadRequest();
       }
 
-      if (transaction.UserId != userId)
+      if (transactionDto.UserId != userId)
       {
         return Unauthorized();
       }
+
+      Transaction transaction = _mapper.Map<Transaction>(transactionDto);
 
       _context.Entry(transaction).State = EntityState.Modified;
       await _context.SaveChangesAsync();
@@ -111,7 +114,7 @@ namespace SplitApi.Controllers
 
     // DELETE: api/Transactions/00000000-0000-0000-0000-000000000000
     [HttpDelete("{id}")]
-    public async Task<ActionResult<Transaction>> DeleteTransaction(Guid id)
+    public async Task<ActionResult<TransactionDto>> DeleteTransaction(Guid id)
     {
       ClaimsIdentity identity = HttpContext.User.Identity as ClaimsIdentity;
       Guid? userId = identity.GetUserId();
@@ -130,7 +133,9 @@ namespace SplitApi.Controllers
       _context.Remove(transaction);
       await _context.SaveChangesAsync();
 
-      return transaction;
+      TransactionDto transactionDto = _mapper.Map<TransactionDto>(transaction);
+
+      return transactionDto;
     }
   }
 }
