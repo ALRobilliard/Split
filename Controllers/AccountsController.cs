@@ -97,13 +97,20 @@ namespace SplitApi.Controllers
         return BadRequest();
       }
 
-      Account account = _mapper.Map<Account>(accountDto);
+      Account account = await _context.Account.FindAsync(id);
+
+      if (account == null)
+      {
+        return NotFound();
+      }
 
       if (account.UserId != userId)
       {
         return Unauthorized();
       }
 
+      account.AccountName = accountDto.AccountName;
+      account.ModifiedOn = DateTime.Now;
       _context.Entry(account).State = EntityState.Modified;
       await _context.SaveChangesAsync();
 
