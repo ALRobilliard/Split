@@ -225,11 +225,19 @@ namespace SplitApi.Models
                   .HasColumnName("transactionPartyName")
                   .HasColumnType("character varying(25)");
 
+        entity.Property(e => e.UserId).HasColumnName("userId");
+
         entity.HasOne(d => d.DefaultCategory)
                   .WithMany(p => p.TransactionParty)
                   .HasForeignKey(d => d.DefaultCategoryId)
                   .OnDelete(DeleteBehavior.SetNull)
                   .HasConstraintName("TransactionParty_defaultCategoryId_fkey");
+
+        entity.HasOne(d => d.User)
+                  .WithMany(p => p.TransactionParty)
+                  .HasForeignKey(d => d.UserId)
+                  .OnDelete(DeleteBehavior.SetNull)
+                  .HasConstraintName("TransactionParty_userId_fkey");
       });
 
       modelBuilder.Entity<User>(entity =>
