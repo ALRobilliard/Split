@@ -42,6 +42,27 @@ namespace SplitApi.Controllers
       return _mapper.Map<List<TransactionPartyDto>>(transactionParties);
     }
 
+    // GET: api/TransactionParties/00000000-0000-0000-0000-000000000000
+    [HttpGet("{id}")]
+    public async Task<ActionResult<TransactionPartyDto>> GetTransaction(Guid id)
+    {
+      ClaimsIdentity identity = HttpContext.User.Identity as ClaimsIdentity;
+      Guid? userId = identity.GetUserId();
+
+      TransactionParty transactionParty = await _context.TransactionParty.FindAsync(id);
+      if (transactionParty == null)
+      {
+        return NotFound();
+      }
+
+      if (transactionParty.UserId != null && transactionParty.UserId != userId)
+      {
+        return Unauthorized();
+      }
+
+      return _mapper.Map<TransactionPartyDto>(transactionParty);
+    }
+
     // POST: api/TransactionParties/search
     [HttpPost("search")]
     public async Task<ActionResult<List<TransactionPartyDto>>> GetByName([FromBody] string transactionPartyName)
@@ -74,6 +95,57 @@ namespace SplitApi.Controllers
       await _context.SaveChangesAsync();
 
       return CreatedAtAction("GetCategory", new { Id = transactionParty.TransactionPartyId }, transactionPartyDto);
+    }
+
+    // PUT: api/TransactionParties/00000000-0000-0000-0000-000000000000
+    [HttpPut("{id}")]
+    public async Task<ActionResult> PutTransactionParty(Guid id, TransactionPartyDto transactionPartyDto)
+    {
+      ClaimsIdentity identity = HttpContext.User.Identity as ClaimsIdentity;
+      Guid? userId = identity.GetUserId();
+
+      if (id != transactionPartyDto.TransactionPartyId)
+      {
+        return BadRequest();
+      }
+
+      if (transactionPartyDto.UserId != null && transactionPartyDto.UserId != userId)
+      {
+        return Unauthorized();
+      }
+
+      TransactionParty transactionParty = _mapper.Map<TransactionParty>(transactionPartyDto);
+
+      _context.Entry(transactionParty).State = EntityState.Modified;
+      await _context.SaveChangesAsync();
+
+      return NoContent();
+    }
+
+    // DELETE: api/TransactionParties/00000000-0000-0000-0000-000000000000
+    [HttpDelete("{id}")]
+    public async Task<ActionResult<TransactionPartyDto>> DeleteTransactionParty(Guid id)
+    {
+      ClaimsIdentity identity = HttpContext.User.Identity as ClaimsIdentity;
+      Guid? userId = identity.GetUserId();
+
+      TransactionParty transactionParty = await _context.TransactionParty.FindAsync(id);
+      if (transactionParty == null)
+      {
+        return NotFound();
+      }
+
+      if (transactionParty.UserId != null && transactionParty.UserId != userId)
+      {
+        return Unauthorized();
+      }
+
+      _context.Remove(transactionParty);
+      await _context.SaveChangesAsync();
+
+      TransactionPartyDto transactionPartyDto = _mapper.Map<TransactionPartyDto>(transactionParty);
+
+      return transactionPartyDto;
     }
   }
 }
