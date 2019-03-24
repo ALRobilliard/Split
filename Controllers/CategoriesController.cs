@@ -81,6 +81,9 @@ namespace SplitApi.Controllers
       _context.Category.Add(category);
       await _context.SaveChangesAsync();
 
+      // Refresh DTO
+      categoryDto = _mapper.Map<CategoryDto>(category);
+
       return CreatedAtAction("GetCategory", new { Id = category.CategoryId }, categoryDto);
     }
 
@@ -96,13 +99,16 @@ namespace SplitApi.Controllers
         return BadRequest();
       }
 
-      Category category = _mapper.Map<Category>(categoryDto);
+      Category category = await _context.Category.FindAsync(id);
 
       if (category.UserId != userId)
       {
         return Unauthorized();
       }
 
+      category.CategoryName = categoryDto.CategoryName;
+      category.CategoryType = categoryDto.CategoryType;
+      category.ModifiedOn = DateTime.Now;
       _context.Entry(category).State = EntityState.Modified;
       await _context.SaveChangesAsync();
 
@@ -111,7 +117,7 @@ namespace SplitApi.Controllers
 
     // DELETE: api/Categories/00000000-0000-0000-0000-000000000000
     [HttpDelete("{id}")]
-    public async Task<ActionResult<Category>> DeleteCategory(Guid id)
+    public async Task<ActionResult<CategoryDto>> DeleteCategory(Guid id)
     {
       ClaimsIdentity identity = HttpContext.User.Identity as ClaimsIdentity;
       Guid? userId = identity.GetUserId();
@@ -130,7 +136,7 @@ namespace SplitApi.Controllers
       _context.Category.Remove(category);
       await _context.SaveChangesAsync();
 
-      return category;
+      return _mapper.Map<CategoryDto>(category);
     }
   }
 }
