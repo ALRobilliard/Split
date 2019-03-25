@@ -84,7 +84,7 @@ namespace SplitApi.Controllers
       }
 
       List<TransactionParty> transactionParties = await _context.TransactionParty.Where(
-        tp => tp.TransactionPartyName.StartsWith(transactionPartyName) &&
+        tp => tp.TransactionPartyName.ToLower().StartsWith(transactionPartyName.ToLower()) &&
           tp.UserId.Equals(userId.Value)).ToListAsync();
 
       List<TransactionPartyDto> transactionPartyDtos = _mapper.Map<List<TransactionPartyDto>>(transactionParties);
@@ -92,7 +92,7 @@ namespace SplitApi.Controllers
     }
 
 
-    // POST: api/TransactionParties/
+    // POST: api/TransactionParties
     [HttpPost]
     public async Task<ActionResult<TransactionPartyDto>> PostTransactionParty(TransactionPartyDto transactionPartyDto)
     {
@@ -113,7 +113,7 @@ namespace SplitApi.Controllers
       // Refresh DTO.
       transactionPartyDto = _mapper.Map<TransactionPartyDto>(transactionParty);
 
-      return CreatedAtAction("GetCategory", new { Id = transactionParty.TransactionPartyId }, transactionPartyDto);
+      return CreatedAtAction("GetTransaction", new { Id = transactionParty.TransactionPartyId }, transactionPartyDto);
     }
 
     // PUT: api/TransactionParties/00000000-0000-0000-0000-000000000000
