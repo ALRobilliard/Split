@@ -29,9 +29,9 @@ namespace SplitApi.Controllers
       _context = context;
     }
 
-    // GET: api/Categories
+    // GET: api/Categories/0
     [HttpGet]
-    public async Task<ActionResult<List<CategoryDto>>> GetCategories()
+    public async Task<ActionResult<List<CategoryDto>>> GetCategories(bool categoryType)
     {
       ClaimsIdentity identity = HttpContext.User.Identity as ClaimsIdentity;
       Guid? userId = identity.GetUserId();
@@ -40,7 +40,10 @@ namespace SplitApi.Controllers
         return BadRequest("User ID unable to be retrieved from token.");
       }
 
-      List<Category> categories = await _context.Category.Where(c => c.UserId.Equals(userId)).ToListAsync();
+      List<Category> categories = await _context.Category.Where(c =>
+        c.CategoryType == categoryType &&
+        c.UserId.Equals(userId)
+      ).ToListAsync();
 
       List<CategoryDto> categoryDtos = _mapper.Map<List<CategoryDto>>(categories);
       return categoryDtos;
@@ -70,6 +73,26 @@ namespace SplitApi.Controllers
 
       CategoryDto categoryDto = _mapper.Map<CategoryDto>(category);
       return categoryDto;
+    }
+
+    // POST: api/Categories/search/0
+    [HttpPost("search")]
+    public async Task<ActionResult<List<CategoryDto>>> GetByName(bool categoryType, [FromBody] string categoryName)
+    {
+      ClaimsIdentity identity = HttpContext.User.Identity as ClaimsIdentity;
+      Guid? userId = identity.GetUserId();
+      if (userId == null)
+      {
+        return BadRequest("User ID unable to be retrieved from token.");
+      }
+
+      List<Category> categories = await _context.Category.Where(
+        c => c.CategoryName.ToLower().StartsWith(categoryName.ToLower()) &&
+          c.CategoryType == categoryType &&
+          c.UserId.Equals(userId.Value)).ToListAsync();
+
+      List<CategoryDto> categoryDtos = _mapper.Map<List<CategoryDto>>(categories);
+      return categoryDtos;
     }
 
     // POST: api/Categories
