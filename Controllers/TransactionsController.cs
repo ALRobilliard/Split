@@ -33,20 +33,21 @@ namespace SplitApi.Controllers
     [HttpGet]
     public async Task<ActionResult<List<TransactionDto>>> GetTransactions(DateTime startDate, DateTime endDate)
     {
-      List<Transaction> transactions = null;
       ClaimsIdentity identity = HttpContext.User.Identity as ClaimsIdentity;
       Guid? userId = identity.GetUserId();
-
-      if (userId != null)
+      if (userId == null)
       {
-        transactions = await _context.Transaction.Where(
-          t => t.UserId.Equals(userId) &&
-          t.TransactionDate.CompareTo(startDate) >= 0 &&
-          t.TransactionDate.CompareTo(endDate) <= 0
-          ).ToListAsync();
+        return BadRequest("User ID unable to be read from token.");
       }
 
-      return _mapper.Map<List<TransactionDto>>(transactions);
+      List<Transaction> transactions = await _context.Transaction.Where(
+        t => t.UserId.Equals(userId) &&
+        t.TransactionDate.CompareTo(startDate) >= 0 &&
+        t.TransactionDate.CompareTo(endDate) <= 0
+        ).ToListAsync();
+
+      List<TransactionDto> transactionDtos = _mapper.Map<List<TransactionDto>>(transactions);
+      return transactionDtos;
     }
 
     // GET: api/Transactions/00000000-0000-0000-0000-000000000000
@@ -55,19 +56,23 @@ namespace SplitApi.Controllers
     {
       ClaimsIdentity identity = HttpContext.User.Identity as ClaimsIdentity;
       Guid? userId = identity.GetUserId();
+      if (userId == null)
+      {
+        return BadRequest("User ID unable to be read from token.");
+      }
 
       Transaction transaction = await _context.Transaction.FindAsync(id);
       if (transaction == null)
       {
         return NotFound();
       }
-
-      if (transaction.UserId != userId)
+      else if (transaction.UserId != userId)
       {
         return Unauthorized();
       }
 
-      return _mapper.Map<TransactionDto>(transaction);
+      TransactionDto transactionDto = _mapper.Map<TransactionDto>(transaction);
+      return transactionDto;
     }
 
     // POST: api/Transactions
@@ -76,13 +81,20 @@ namespace SplitApi.Controllers
     {
       ClaimsIdentity identity = HttpContext.User.Identity as ClaimsIdentity;
       Guid? userId = identity.GetUserId();
+      if (userId == null)
+      {
+        return BadRequest("User ID unable to be read from token.");
+      }
 
-      transactionDto.UserId = userId.Value;
+      transactionDto.UserId = userId;
 
       Transaction transaction = _mapper.Map<Transaction>(transactionDto);
 
       _context.Transaction.Add(transaction);
       await _context.SaveChangesAsync();
+
+      // Refresh DTO.
+      transactionDto = _mapper.Map<TransactionDto>(transaction);
 
       return CreatedAtAction("GetTransaction", new { Id = transaction.TransactionId }, transactionDto);
     }
@@ -93,10 +105,14 @@ namespace SplitApi.Controllers
     {
       ClaimsIdentity identity = HttpContext.User.Identity as ClaimsIdentity;
       Guid? userId = identity.GetUserId();
-
       if (id != transactionDto.TransactionId)
       {
-        return BadRequest();
+        return BadRequest("User ID unable to be retrieved from token.");
+      }
+
+      if (id != transactionDto.UserId)
+      {
+        return BadRequest("Transaction ID does not match the Posted object.");
       }
 
       if (transactionDto.UserId != userId)
@@ -104,8 +120,19 @@ namespace SplitApi.Controllers
         return Unauthorized();
       }
 
-      Transaction transaction = _mapper.Map<Transaction>(transactionDto);
+      Transaction transaction = await _context.Transaction.FindAsync(id);
+      if (transaction == null)
+      {
+        return NotFound();
+      }
 
+      transaction.CategoryId = transactionDto.CategoryId;
+      transaction.TransactionPartyId = transactionDto.TransactionPartyId;
+      transaction.AccountInId = transactionDto.AccountInId;
+      transaction.AccountOutId = transactionDto.AccountOutId;
+      transaction.Amount = transactionDto.Amount;
+      transaction.IsShared = transactionDto.IsShared;
+      transaction.ModifiedOn = DateTime.Now;
       _context.Entry(transaction).State = EntityState.Modified;
       await _context.SaveChangesAsync();
 
@@ -118,6 +145,10 @@ namespace SplitApi.Controllers
     {
       ClaimsIdentity identity = HttpContext.User.Identity as ClaimsIdentity;
       Guid? userId = identity.GetUserId();
+      if (userId == null)
+      {
+        return BadRequest("User ID unable to be retrieved from token.");
+      }
 
       Transaction transaction = await _context.Transaction.FindAsync(id);
       if (transaction == null)
@@ -134,7 +165,6 @@ namespace SplitApi.Controllers
       await _context.SaveChangesAsync();
 
       TransactionDto transactionDto = _mapper.Map<TransactionDto>(transaction);
-
       return transactionDto;
     }
   }

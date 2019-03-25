@@ -35,6 +35,10 @@ namespace SplitApi.Controllers
     {
       ClaimsIdentity identity = HttpContext.User.Identity as ClaimsIdentity;
       Guid? userId = identity.GetUserId();
+      if (userId == null)
+      {
+        return BadRequest("User ID unable to be retrieved from Token");
+      }
 
       SplitPayment splitPayment = await _context.SplitPayment.FindAsync(id);
       Transaction transaction = await _context.Transaction.FindAsync(splitPayment.TransactionId);
@@ -49,7 +53,8 @@ namespace SplitApi.Controllers
         return Unauthorized();
       }
 
-      return _mapper.Map<SplitPaymentDto>(splitPayment);
+      SplitPaymentDto splitPaymentDto = _mapper.Map<SplitPaymentDto>(splitPayment);
+      return splitPaymentDto;
     }
 
     // POST: api/SplitPayments/GetPaymentsForTransaction
@@ -58,6 +63,10 @@ namespace SplitApi.Controllers
     {
       ClaimsIdentity identity = HttpContext.User.Identity as ClaimsIdentity;
       Guid? userId = identity.GetUserId();
+      if (userId == null)
+      {
+        return BadRequest("User ID unable to be retrieved from token.");
+      }
 
       Transaction transaction = await _context.Transaction.FindAsync(transactionId);
       if (transaction == null)
@@ -74,7 +83,8 @@ namespace SplitApi.Controllers
         sp => sp.TransactionId.Equals(transaction.TransactionId)
       ).ToListAsync();
 
-      return _mapper.Map<List<SplitPaymentDto>>(splitPayments);
+      List<SplitPaymentDto> splitPaymentDtos = _mapper.Map<List<SplitPaymentDto>>(splitPayments);
+      return splitPaymentDtos;
     }
 
     // POST: api/SplitPayments
@@ -83,6 +93,10 @@ namespace SplitApi.Controllers
     {
       ClaimsIdentity identity = HttpContext.User.Identity as ClaimsIdentity;
       Guid? userId = identity.GetUserId();
+      if (userId == null)
+      {
+        return BadRequest("User ID unable to be retrieved from token.");
+      }
 
       Transaction transaction = await _context.Transaction.FindAsync(splitPaymentDto.TransactionId);
       if (transaction.UserId != userId)
@@ -95,6 +109,9 @@ namespace SplitApi.Controllers
       _context.SplitPayment.Add(splitPayment);
       await _context.SaveChangesAsync();
 
+      // Refres DTO.
+      splitPaymentDto = _mapper.Map<SplitPaymentDto>(splitPayment);
+
       return CreatedAtAction("GetSplitPayment", new { Id = splitPayment.SplitPaymentId }, splitPaymentDto);
     }
 
@@ -104,10 +121,14 @@ namespace SplitApi.Controllers
     {
       ClaimsIdentity identity = HttpContext.User.Identity as ClaimsIdentity;
       Guid? userId = identity.GetUserId();
+      if (userId == null)
+      {
+        return BadRequest("User ID unable to be retrieved from token.");
+      }
 
       if (id != splitPaymentDto.SplitPaymentId)
       {
-        return BadRequest();
+        return BadRequest("Split Payment ID does not match the Posted object.");
       }
 
       Transaction transaction = await _context.Transaction.FindAsync(splitPaymentDto.TransactionId);
@@ -116,7 +137,15 @@ namespace SplitApi.Controllers
         return Unauthorized();
       }
 
-      SplitPayment splitPayment = _mapper.Map<SplitPayment>(splitPaymentDto);
+      SplitPayment splitPayment = await _context.SplitPayment.FindAsync(id);
+      if (splitPayment == null)
+      {
+        return NotFound();
+      }
+
+      splitPayment.Amount = splitPaymentDto.Amount;
+      splitPayment.PayeeId = splitPaymentDto.PayeeId;
+      splitPayment.ModifiedOn = DateTime.Now;
       _context.Entry(splitPayment).State = EntityState.Modified;
       await _context.SaveChangesAsync();
 
@@ -129,17 +158,23 @@ namespace SplitApi.Controllers
     {
       ClaimsIdentity identity = HttpContext.User.Identity as ClaimsIdentity;
       Guid? userId = identity.GetUserId();
+      if (userId == null)
+      {
+        return BadRequest("User ID unable to be read from token.");
+      }
 
       SplitPayment splitPayment = await _context.SplitPayment.FindAsync(id);
-
       if (splitPayment == null)
       {
         return NotFound();
       }
 
       Transaction transaction = await _context.Transaction.FindAsync(splitPayment.TransactionId);
-
-      if (transaction.UserId != userId)
+      if (transaction == null)
+      {
+        return NotFound("Parent Transaction not found.");
+      }
+      else if (transaction.UserId != userId)
       {
         return Unauthorized();
       }

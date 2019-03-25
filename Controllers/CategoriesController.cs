@@ -33,16 +33,17 @@ namespace SplitApi.Controllers
     [HttpGet]
     public async Task<ActionResult<List<CategoryDto>>> GetCategories()
     {
-      List<Category> categories = null;
       ClaimsIdentity identity = HttpContext.User.Identity as ClaimsIdentity;
       Guid? userId = identity.GetUserId();
-
-      if (userId != null)
+      if (userId == null)
       {
-        categories = await _context.Category.Where(c => c.UserId.Equals(userId)).ToListAsync();
+        return BadRequest("User ID unable to be retrieved from token.");
       }
 
-      return _mapper.Map<List<CategoryDto>>(categories);
+      List<Category> categories = await _context.Category.Where(c => c.UserId.Equals(userId)).ToListAsync();
+
+      List<CategoryDto> categoryDtos = _mapper.Map<List<CategoryDto>>(categories);
+      return categoryDtos;
     }
 
     // GET: api/Categories/00000000-0000-0000-0000-000000000000
@@ -51,9 +52,12 @@ namespace SplitApi.Controllers
     {
       ClaimsIdentity identity = HttpContext.User.Identity as ClaimsIdentity;
       Guid? userId = identity.GetUserId();
+      if (userId == null)
+      {
+        return BadRequest("User ID unable to be retrieved from token.");
+      }
 
       Category category = await _context.Category.FindAsync(id);
-
       if (category == null)
       {
         return NotFound();
@@ -64,7 +68,8 @@ namespace SplitApi.Controllers
         return Unauthorized();
       }
 
-      return _mapper.Map<CategoryDto>(category);
+      CategoryDto categoryDto = _mapper.Map<CategoryDto>(category);
+      return categoryDto;
     }
 
     // POST: api/Categories
@@ -73,6 +78,10 @@ namespace SplitApi.Controllers
     {
       ClaimsIdentity identity = HttpContext.User.Identity as ClaimsIdentity;
       Guid? userId = identity.GetUserId();
+      if (userId == null)
+      {
+        return BadRequest("User ID unable to be retrieved from token.");
+      }
 
       categoryDto.UserId = userId.Value;
 
@@ -93,15 +102,22 @@ namespace SplitApi.Controllers
     {
       ClaimsIdentity identity = HttpContext.User.Identity as ClaimsIdentity;
       Guid? userId = identity.GetUserId();
+      if (userId == null)
+      {
+        return BadRequest("User ID unable to be retrieved from token.");
+      }
 
       if (id != categoryDto.CategoryId)
       {
-        return BadRequest();
+        return BadRequest("Category ID does not match the Posted object.");
       }
 
       Category category = await _context.Category.FindAsync(id);
-
-      if (category.UserId != userId)
+      if (category == null)
+      {
+        return NotFound();
+      }
+      else if (category.UserId != userId)
       {
         return Unauthorized();
       }
@@ -121,6 +137,10 @@ namespace SplitApi.Controllers
     {
       ClaimsIdentity identity = HttpContext.User.Identity as ClaimsIdentity;
       Guid? userId = identity.GetUserId();
+      if (userId == null)
+      {
+        return BadRequest("User ID unable to be retrieved from token.");
+      }
 
       Category category = await _context.Category.FindAsync(id);
       if (category == null)
@@ -136,7 +156,8 @@ namespace SplitApi.Controllers
       _context.Category.Remove(category);
       await _context.SaveChangesAsync();
 
-      return _mapper.Map<CategoryDto>(category);
+      CategoryDto categoryDto = _mapper.Map<CategoryDto>(category);
+      return categoryDto;
     }
   }
 }
