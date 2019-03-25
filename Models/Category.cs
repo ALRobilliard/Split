@@ -16,16 +16,17 @@ namespace SplitApi.Models
     public DateTime CreatedOn { get; set; }
     public DateTime ModifiedOn { get; set; }
     public Guid UserId { get; set; }
-    public bool CategoryType { get; set; }
+    public int CategoryType { get; set; }
 
     public User User { get; set; }
     public ICollection<Transaction> Transaction { get; set; }
     public ICollection<TransactionParty> TransactionParty { get; set; }
   }
 
-  public static class CategoryTypes
+  public enum CategoryType
   {
-    public const bool Expense = true;
-    public const bool Income = false;
+    Expense,
+    Income,
+    Transfer
   }
 }
