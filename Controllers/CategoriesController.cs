@@ -31,13 +31,18 @@ namespace SplitApi.Controllers
 
     // GET: api/Categories/0
     [HttpGet]
-    public async Task<ActionResult<List<CategoryDto>>> GetCategories(bool categoryType)
+    public async Task<ActionResult<List<CategoryDto>>> GetCategories(int categoryType)
     {
       ClaimsIdentity identity = HttpContext.User.Identity as ClaimsIdentity;
       Guid? userId = identity.GetUserId();
       if (userId == null)
       {
         return BadRequest("User ID unable to be retrieved from token.");
+      }
+
+      if (categoryType < 0 || categoryType > 2)
+      {
+        return BadRequest("The provided Category Type is invalid.");
       }
 
       List<Category> categories = await _context.Category.Where(c =>
@@ -77,13 +82,18 @@ namespace SplitApi.Controllers
 
     // POST: api/Categories/search/0
     [HttpPost("search")]
-    public async Task<ActionResult<List<CategoryDto>>> GetByName(bool categoryType, [FromBody] string categoryName)
+    public async Task<ActionResult<List<CategoryDto>>> GetByName(int categoryType, [FromBody] string categoryName)
     {
       ClaimsIdentity identity = HttpContext.User.Identity as ClaimsIdentity;
       Guid? userId = identity.GetUserId();
       if (userId == null)
       {
         return BadRequest("User ID unable to be retrieved from token.");
+      }
+
+      if (categoryType < 0 || categoryType > 2)
+      {
+        return BadRequest("The provided Category Type is invalid.");
       }
 
       List<Category> categories = await _context.Category.Where(
@@ -104,6 +114,11 @@ namespace SplitApi.Controllers
       if (userId == null)
       {
         return BadRequest("User ID unable to be retrieved from token.");
+      }
+
+      if (categoryDto.CategoryType < 0 || categoryDto.CategoryType > 2)
+      {
+        return BadRequest("The provided Category Type is invalid.");
       }
 
       categoryDto.UserId = userId.Value;
@@ -133,6 +148,11 @@ namespace SplitApi.Controllers
       if (id != categoryDto.CategoryId)
       {
         return BadRequest("Category ID does not match the Posted object.");
+      }
+
+      if (categoryDto.CategoryType < 0 || categoryDto.CategoryType > 2)
+      {
+        return BadRequest("The provided Category Type is invalid.");
       }
 
       Category category = await _context.Category.FindAsync(id);
