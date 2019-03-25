@@ -15,8 +15,10 @@ namespace SplitApi.Models
     public Guid? DefaultCategoryId { get; set; }
     public DateTime CreatedOn { get; set; }
     public DateTime ModifiedOn { get; set; }
+    public Guid? UserId { get; set; }
 
     public Category DefaultCategory { get; set; }
+    public User User { get; set; }
     public ICollection<Transaction> Transaction { get; set; }
   }
 }
