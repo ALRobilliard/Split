@@ -9,5 +9,6 @@ namespace SplitApi.Dtos
     public Guid? DefaultCategoryId { get; set; }
     public DateTime CreatedOn { get; set; }
     public DateTime ModifiedOn { get; set; }
+    public Guid? UserId { get; set; }
   }
 }

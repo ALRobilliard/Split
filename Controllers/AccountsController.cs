@@ -32,37 +32,39 @@ namespace SplitApi.Controllers
     [HttpGet]
     public async Task<ActionResult<List<AccountDto>>> GetAccounts()
     {
-      List<Account> accounts = null;
-
       ClaimsIdentity identity = HttpContext.User.Identity as ClaimsIdentity;
       Guid? userId = identity.GetUserId();
-      if (userId != null)
-      {
-        accounts = await _context.Account.Where(a => a.UserId.Equals(userId)).ToListAsync();
-      }
 
-      return _mapper.Map<List<AccountDto>>(accounts);
+      List<Account> accounts = await _context.Account.Where(a => a.UserId.Equals(userId)).ToListAsync();
+
+      List<AccountDto> accountDtos = _mapper.Map<List<AccountDto>>(accounts);
+      return accountDtos;
     }
 
     // GET: api/Accounts/00000000-0000-0000-0000-000000000000
     [HttpGet("{id}")]
     public async Task<ActionResult<AccountDto>> GetAccount(Guid id)
     {
-      Account account = await _context.Account.FindAsync(id);
       ClaimsIdentity identity = HttpContext.User.Identity as ClaimsIdentity;
       Guid? userId = identity.GetUserId();
 
+      if (userId == null)
+      {
+        return BadRequest("User ID unable to be retrieved from token.");
+      }
+
+      Account account = await _context.Account.FindAsync(id);
       if (account == null)
       {
         return NotFound();
       }
-
-      if (account.UserId != userId)
+      else if (account.UserId != userId)
       {
         return Unauthorized();
       }
 
-      return _mapper.Map<AccountDto>(account);
+      AccountDto accountDto = _mapper.Map<AccountDto>(account);
+      return accountDto;
     }
 
     // POST: api/Accounts
@@ -71,6 +73,10 @@ namespace SplitApi.Controllers
     {
       ClaimsIdentity identity = HttpContext.User.Identity as ClaimsIdentity;
       Guid? userId = identity.GetUserId();
+      if (userId == null)
+      {
+        return BadRequest("User ID unable to be retrieved from token.");
+      }
 
       Account account = new Account();
       account.AccountName = accountName;
@@ -91,19 +97,29 @@ namespace SplitApi.Controllers
     {
       ClaimsIdentity identity = HttpContext.User.Identity as ClaimsIdentity;
       Guid? userId = identity.GetUserId();
+      if (userId == null)
+      {
+        return BadRequest("User ID unable to be retrieved from token.");
+      }
 
       if (id != accountDto.AccountId)
       {
-        return BadRequest();
+        return BadRequest("Account ID does not match the Posted object.");
       }
 
-      Account account = _mapper.Map<Account>(accountDto);
+      Account account = await _context.Account.FindAsync(id);
+      if (account == null)
+      {
+        return NotFound();
+      }
 
       if (account.UserId != userId)
       {
         return Unauthorized();
       }
 
+      account.AccountName = accountDto.AccountName;
+      account.ModifiedOn = DateTime.Now;
       _context.Entry(account).State = EntityState.Modified;
       await _context.SaveChangesAsync();
 
@@ -112,13 +128,16 @@ namespace SplitApi.Controllers
 
     // DELETE: api/Accounts/00000000-0000-0000-0000-000000000000
     [HttpDelete("{id}")]
-    public async Task<ActionResult<Account>> DeleteAccount(Guid id)
+    public async Task<ActionResult<AccountDto>> DeleteAccount(Guid id)
     {
       ClaimsIdentity identity = HttpContext.User.Identity as ClaimsIdentity;
       Guid? userId = identity.GetUserId();
+      if (userId == null)
+      {
+        return BadRequest("User ID unable to be retrieved from token.");
+      }
 
       Account account = await _context.Account.FindAsync(id);
-
       if (account == null)
       {
         return NotFound();
@@ -132,7 +151,8 @@ namespace SplitApi.Controllers
       _context.Account.Remove(account);
       await _context.SaveChangesAsync();
 
-      return account;
+      AccountDto accountDto = _mapper.Map<AccountDto>(account);
+      return accountDto;
     }
   }
 }
