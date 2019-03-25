@@ -35,11 +35,16 @@ namespace SplitApi.Controllers
     {
       ClaimsIdentity identity = HttpContext.User.Identity as ClaimsIdentity;
       Guid? userId = identity.GetUserId();
+      if (userId == null)
+      {
+        return BadRequest("User ID unable to be retrieved from token.");
+      }
 
       List<TransactionParty> transactionParties = await _context.TransactionParty.Where(
-        tp => tp.UserId.Equals(userId) || tp.UserId.Equals(null)
-      ).ToListAsync();
-      return _mapper.Map<List<TransactionPartyDto>>(transactionParties);
+        tp => tp.UserId.Equals(userId)).ToListAsync();
+
+      List<TransactionPartyDto> transactionPartyDtos = _mapper.Map<List<TransactionPartyDto>>(transactionParties);
+      return transactionPartyDtos;
     }
 
     // GET: api/TransactionParties/00000000-0000-0000-0000-000000000000
@@ -48,19 +53,23 @@ namespace SplitApi.Controllers
     {
       ClaimsIdentity identity = HttpContext.User.Identity as ClaimsIdentity;
       Guid? userId = identity.GetUserId();
+      if (userId == null)
+      {
+        return BadRequest("User ID unable to be retrieved from token.");
+      }
 
       TransactionParty transactionParty = await _context.TransactionParty.FindAsync(id);
       if (transactionParty == null)
       {
         return NotFound();
       }
-
-      if (transactionParty.UserId != null && transactionParty.UserId != userId)
+      else if (transactionParty.UserId != userId)
       {
         return Unauthorized();
       }
 
-      return _mapper.Map<TransactionPartyDto>(transactionParty);
+      TransactionPartyDto transactionPartyDto = _mapper.Map<TransactionPartyDto>(transactionParty);
+      return transactionPartyDto;
     }
 
     // POST: api/TransactionParties/search
@@ -69,30 +78,40 @@ namespace SplitApi.Controllers
     {
       ClaimsIdentity identity = HttpContext.User.Identity as ClaimsIdentity;
       Guid? userId = identity.GetUserId();
+      if (userId == null)
+      {
+        return BadRequest("User ID unable to be retrieved from token.");
+      }
 
       List<TransactionParty> transactionParties = await _context.TransactionParty.Where(
-        tp =>
-          tp.TransactionPartyName.StartsWith(transactionPartyName) &&
-          (
-            tp.UserId.Equals(userId.Value) ||
-            tp.UserId.Equals(null)
-          )
-        ).ToListAsync();
-      return _mapper.Map<List<TransactionPartyDto>>(transactionParties);
+        tp => tp.TransactionPartyName.StartsWith(transactionPartyName) &&
+          tp.UserId.Equals(userId.Value)).ToListAsync();
+
+      List<TransactionPartyDto> transactionPartyDtos = _mapper.Map<List<TransactionPartyDto>>(transactionParties);
+      return transactionPartyDtos;
     }
 
 
-    // POST: api/TransactionParties
+    // POST: api/TransactionParties/
     [HttpPost]
     public async Task<ActionResult<TransactionPartyDto>> PostTransactionParty(TransactionPartyDto transactionPartyDto)
     {
       ClaimsIdentity identity = HttpContext.User.Identity as ClaimsIdentity;
       Guid? userId = identity.GetUserId();
+      if (userId == null)
+      {
+        return BadRequest("User ID unable to be retrieved from token.");
+      }
+
+      transactionPartyDto.UserId = userId;
 
       TransactionParty transactionParty = _mapper.Map<TransactionParty>(transactionPartyDto);
-      transactionParty.UserId = userId;
+
       _context.TransactionParty.Add(transactionParty);
       await _context.SaveChangesAsync();
+
+      // Refresh DTO.
+      transactionPartyDto = _mapper.Map<TransactionPartyDto>(transactionParty);
 
       return CreatedAtAction("GetCategory", new { Id = transactionParty.TransactionPartyId }, transactionPartyDto);
     }
@@ -103,10 +122,14 @@ namespace SplitApi.Controllers
     {
       ClaimsIdentity identity = HttpContext.User.Identity as ClaimsIdentity;
       Guid? userId = identity.GetUserId();
+      if (userId == null)
+      {
+        return BadRequest("User ID unable to be retrieved from token.");
+      }
 
       if (id != transactionPartyDto.TransactionPartyId)
       {
-        return BadRequest();
+        return BadRequest("Transaction Party ID does not match the Posted object.");
       }
 
       if (transactionPartyDto.UserId != null && transactionPartyDto.UserId != userId)
@@ -114,8 +137,15 @@ namespace SplitApi.Controllers
         return Unauthorized();
       }
 
-      TransactionParty transactionParty = _mapper.Map<TransactionParty>(transactionPartyDto);
+      TransactionParty transactionParty = await _context.TransactionParty.FindAsync(id);
+      if (transactionParty == null)
+      {
+        return NotFound();
+      }
 
+      transactionParty.TransactionPartyName = transactionPartyDto.TransactionPartyName;
+      transactionParty.DefaultCategoryId = transactionPartyDto.DefaultCategoryId;
+      transactionParty.ModifiedOn = DateTime.Now;
       _context.Entry(transactionParty).State = EntityState.Modified;
       await _context.SaveChangesAsync();
 
@@ -128,6 +158,10 @@ namespace SplitApi.Controllers
     {
       ClaimsIdentity identity = HttpContext.User.Identity as ClaimsIdentity;
       Guid? userId = identity.GetUserId();
+      if (userId == null)
+      {
+        return BadRequest("User ID unable to be retrieved from token.");
+      }
 
       TransactionParty transactionParty = await _context.TransactionParty.FindAsync(id);
       if (transactionParty == null)
@@ -144,7 +178,6 @@ namespace SplitApi.Controllers
       await _context.SaveChangesAsync();
 
       TransactionPartyDto transactionPartyDto = _mapper.Map<TransactionPartyDto>(transactionParty);
-
       return transactionPartyDto;
     }
   }
