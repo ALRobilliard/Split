@@ -29,20 +29,29 @@ namespace SplitApi.Controllers
       _context = context;
     }
 
-    // GET: api/Categories
+    // GET: api/Categories/0
     [HttpGet]
-    public async Task<ActionResult<List<CategoryDto>>> GetCategories()
+    public async Task<ActionResult<List<CategoryDto>>> GetCategories(int categoryType)
     {
-      List<Category> categories = null;
       ClaimsIdentity identity = HttpContext.User.Identity as ClaimsIdentity;
       Guid? userId = identity.GetUserId();
-
-      if (userId != null)
+      if (userId == null)
       {
-        categories = await _context.Category.Where(c => c.UserId.Equals(userId)).ToListAsync();
+        return BadRequest("User ID unable to be retrieved from token.");
       }
 
-      return _mapper.Map<List<CategoryDto>>(categories);
+      if (categoryType < 0 || categoryType > 2)
+      {
+        return BadRequest("The provided Category Type is invalid.");
+      }
+
+      List<Category> categories = await _context.Category.Where(c =>
+        c.CategoryType == categoryType &&
+        c.UserId.Equals(userId)
+      ).ToListAsync();
+
+      List<CategoryDto> categoryDtos = _mapper.Map<List<CategoryDto>>(categories);
+      return categoryDtos;
     }
 
     // GET: api/Categories/00000000-0000-0000-0000-000000000000
@@ -51,9 +60,12 @@ namespace SplitApi.Controllers
     {
       ClaimsIdentity identity = HttpContext.User.Identity as ClaimsIdentity;
       Guid? userId = identity.GetUserId();
+      if (userId == null)
+      {
+        return BadRequest("User ID unable to be retrieved from token.");
+      }
 
       Category category = await _context.Category.FindAsync(id);
-
       if (category == null)
       {
         return NotFound();
@@ -64,22 +76,61 @@ namespace SplitApi.Controllers
         return Unauthorized();
       }
 
-      return _mapper.Map<CategoryDto>(category);
+      CategoryDto categoryDto = _mapper.Map<CategoryDto>(category);
+      return categoryDto;
+    }
+
+    // POST: api/Categories/search/0
+    [HttpPost("search")]
+    public async Task<ActionResult<List<CategoryDto>>> GetByName(int categoryType, [FromBody] string categoryName)
+    {
+      ClaimsIdentity identity = HttpContext.User.Identity as ClaimsIdentity;
+      Guid? userId = identity.GetUserId();
+      if (userId == null)
+      {
+        return BadRequest("User ID unable to be retrieved from token.");
+      }
+
+      if (categoryType < 0 || categoryType > 2)
+      {
+        return BadRequest("The provided Category Type is invalid.");
+      }
+
+      List<Category> categories = await _context.Category.Where(
+        c => c.CategoryName.ToLower().StartsWith(categoryName.ToLower()) &&
+          c.CategoryType == categoryType &&
+          c.UserId.Equals(userId.Value)).ToListAsync();
+
+      List<CategoryDto> categoryDtos = _mapper.Map<List<CategoryDto>>(categories);
+      return categoryDtos;
     }
 
     // POST: api/Categories
     [HttpPost]
-    public async Task<ActionResult<CategoryDto>> PostCategory(Category category)
+    public async Task<ActionResult<CategoryDto>> PostCategory(CategoryDto categoryDto)
     {
       ClaimsIdentity identity = HttpContext.User.Identity as ClaimsIdentity;
       Guid? userId = identity.GetUserId();
+      if (userId == null)
+      {
+        return BadRequest("User ID unable to be retrieved from token.");
+      }
 
-      category.UserId = userId.Value;
+      if (categoryDto.CategoryType < 0 || categoryDto.CategoryType > 2)
+      {
+        return BadRequest("The provided Category Type is invalid.");
+      }
+
+      categoryDto.UserId = userId.Value;
+
+      Category category = _mapper.Map<Category>(categoryDto);
 
       _context.Category.Add(category);
       await _context.SaveChangesAsync();
 
-      CategoryDto categoryDto = _mapper.Map<CategoryDto>(category);
+      // Refresh DTO
+      categoryDto = _mapper.Map<CategoryDto>(category);
+
       return CreatedAtAction("GetCategory", new { Id = category.CategoryId }, categoryDto);
     }
 
@@ -89,19 +140,34 @@ namespace SplitApi.Controllers
     {
       ClaimsIdentity identity = HttpContext.User.Identity as ClaimsIdentity;
       Guid? userId = identity.GetUserId();
+      if (userId == null)
+      {
+        return BadRequest("User ID unable to be retrieved from token.");
+      }
 
       if (id != categoryDto.CategoryId)
       {
-        return BadRequest();
+        return BadRequest("Category ID does not match the Posted object.");
       }
 
-      Category category = _mapper.Map<Category>(categoryDto);
+      if (categoryDto.CategoryType < 0 || categoryDto.CategoryType > 2)
+      {
+        return BadRequest("The provided Category Type is invalid.");
+      }
 
-      if (category.UserId != userId)
+      Category category = await _context.Category.FindAsync(id);
+      if (category == null)
+      {
+        return NotFound();
+      }
+      else if (category.UserId != userId)
       {
         return Unauthorized();
       }
 
+      category.CategoryName = categoryDto.CategoryName;
+      category.CategoryType = categoryDto.CategoryType;
+      category.ModifiedOn = DateTime.Now;
       _context.Entry(category).State = EntityState.Modified;
       await _context.SaveChangesAsync();
 
@@ -110,10 +176,14 @@ namespace SplitApi.Controllers
 
     // DELETE: api/Categories/00000000-0000-0000-0000-000000000000
     [HttpDelete("{id}")]
-    public async Task<ActionResult<Category>> DeleteCategory(Guid id)
+    public async Task<ActionResult<CategoryDto>> DeleteCategory(Guid id)
     {
       ClaimsIdentity identity = HttpContext.User.Identity as ClaimsIdentity;
       Guid? userId = identity.GetUserId();
+      if (userId == null)
+      {
+        return BadRequest("User ID unable to be retrieved from token.");
+      }
 
       Category category = await _context.Category.FindAsync(id);
       if (category == null)
@@ -129,7 +199,8 @@ namespace SplitApi.Controllers
       _context.Category.Remove(category);
       await _context.SaveChangesAsync();
 
-      return category;
+      CategoryDto categoryDto = _mapper.Map<CategoryDto>(category);
+      return categoryDto;
     }
   }
 }
