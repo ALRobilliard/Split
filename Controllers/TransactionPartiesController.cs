@@ -49,7 +49,7 @@ namespace SplitApi.Controllers
 
     // GET: api/TransactionParties/00000000-0000-0000-0000-000000000000
     [HttpGet("{id}")]
-    public async Task<ActionResult<TransactionPartyDto>> GetTransaction(Guid id)
+    public async Task<ActionResult<TransactionPartyDto>> GetTransactionParty(Guid id)
     {
       ClaimsIdentity identity = HttpContext.User.Identity as ClaimsIdentity;
       Guid? userId = identity.GetUserId();
@@ -113,7 +113,7 @@ namespace SplitApi.Controllers
       // Refresh DTO.
       transactionPartyDto = _mapper.Map<TransactionPartyDto>(transactionParty);
 
-      return CreatedAtAction("GetTransaction", new { Id = transactionParty.TransactionPartyId }, transactionPartyDto);
+      return CreatedAtAction("GetTransactionParty", new { Id = transactionParty.TransactionPartyId }, transactionPartyDto);
     }
 
     // PUT: api/TransactionParties/00000000-0000-0000-0000-000000000000
