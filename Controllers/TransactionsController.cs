@@ -29,7 +29,7 @@ namespace SplitApi.Controllers
       _context = context;
     }
 
-    // GET: api/Transcations
+    // GET: api/Transactions
     [HttpGet]
     public async Task<ActionResult<List<TransactionDto>>> GetTransactions(DateTime startDate, DateTime endDate)
     {
@@ -38,6 +38,11 @@ namespace SplitApi.Controllers
       if (userId == null)
       {
         return BadRequest("User ID unable to be read from token.");
+      }
+
+      if (startDate.CompareTo(endDate) > 0)
+      {
+        return BadRequest("Specified StartDate is later than Specified EndDate.");
       }
 
       List<Transaction> transactions = await _context.Transaction.Where(
@@ -105,25 +110,24 @@ namespace SplitApi.Controllers
     {
       ClaimsIdentity identity = HttpContext.User.Identity as ClaimsIdentity;
       Guid? userId = identity.GetUserId();
-      if (id != transactionDto.TransactionId)
+      if (userId == null)
       {
         return BadRequest("User ID unable to be retrieved from token.");
       }
 
-      if (id != transactionDto.UserId)
+      if (id != transactionDto.TransactionId)
       {
         return BadRequest("Transaction ID does not match the Posted object.");
-      }
-
-      if (transactionDto.UserId != userId)
-      {
-        return Unauthorized();
       }
 
       Transaction transaction = await _context.Transaction.FindAsync(id);
       if (transaction == null)
       {
         return NotFound();
+      }
+      else if (transaction.UserId != userId)
+      {
+        return Unauthorized();
       }
 
       transaction.CategoryId = transactionDto.CategoryId;

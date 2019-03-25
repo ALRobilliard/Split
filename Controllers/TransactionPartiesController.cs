@@ -132,15 +132,14 @@ namespace SplitApi.Controllers
         return BadRequest("Transaction Party ID does not match the Posted object.");
       }
 
-      if (transactionPartyDto.UserId != null && transactionPartyDto.UserId != userId)
-      {
-        return Unauthorized();
-      }
-
       TransactionParty transactionParty = await _context.TransactionParty.FindAsync(id);
       if (transactionParty == null)
       {
         return NotFound();
+      }
+      else if (transactionParty.UserId != userId)
+      {
+        return Unauthorized();
       }
 
       transactionParty.TransactionPartyName = transactionPartyDto.TransactionPartyName;
