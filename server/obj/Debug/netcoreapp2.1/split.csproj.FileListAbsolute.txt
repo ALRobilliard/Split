@@ -1,0 +1,14 @@
+/Users/andrewrobilliard/githubDesktop/split-api/server/bin/Debug/netcoreapp2.1/split.deps.json
+/Users/andrewrobilliard/githubDesktop/split-api/server/bin/Debug/netcoreapp2.1/split.runtimeconfig.json
+/Users/andrewrobilliard/githubDesktop/split-api/server/bin/Debug/netcoreapp2.1/split.runtimeconfig.dev.json
+/Users/andrewrobilliard/githubDesktop/split-api/server/bin/Debug/netcoreapp2.1/split.dll
+/Users/andrewrobilliard/githubDesktop/split-api/server/bin/Debug/netcoreapp2.1/split.pdb
+/Users/andrewrobilliard/githubDesktop/split-api/server/obj/Debug/netcoreapp2.1/split.csprojAssemblyReference.cache
+/Users/andrewrobilliard/githubDesktop/split-api/server/obj/Debug/netcoreapp2.1/split.csproj.CoreCompileInputs.cache
+/Users/andrewrobilliard/githubDesktop/split-api/server/obj/Debug/netcoreapp2.1/split.RazorAssemblyInfo.cache
+/Users/andrewrobilliard/githubDesktop/split-api/server/obj/Debug/netcoreapp2.1/split.RazorAssemblyInfo.cs
+/Users/andrewrobilliard/githubDesktop/split-api/server/obj/Debug/netcoreapp2.1/split.AssemblyInfoInputs.cache
+/Users/andrewrobilliard/githubDesktop/split-api/server/obj/Debug/netcoreapp2.1/split.AssemblyInfo.cs
+/Users/andrewrobilliard/githubDesktop/split-api/server/obj/Debug/netcoreapp2.1/split.RazorTargetAssemblyInfo.cache
+/Users/andrewrobilliard/githubDesktop/split-api/server/obj/Debug/netcoreapp2.1/split.dll
+/Users/andrewrobilliard/githubDesktop/split-api/server/obj/Debug/netcoreapp2.1/split.pdb
