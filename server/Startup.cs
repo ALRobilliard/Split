@@ -23,9 +23,12 @@ namespace Split
 {
   public class Startup
   {
+    private readonly string _dbConnectionString;
+
     public Startup(IConfiguration configuration)
     {
       Configuration = configuration;
+      _dbConnectionString = Environment.GetEnvironmentVariable("DB_CONNECTION_STRING");
     }
 
     public IConfiguration Configuration { get; }
@@ -36,7 +39,7 @@ namespace Split
       // Add framework services.
       services.AddCors();
       services.AddDbContext<SplitContext>(options =>
-          options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection")));
+          options.UseNpgsql(_dbConnectionString));
       services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
       services.AddAutoMapper();
 
