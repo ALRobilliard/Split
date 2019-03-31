@@ -1,5 +1,7 @@
 appsettings.json
 appsettings.Development.json
 
+docker-compose.yml
+
 bin/Debug
 obj/Debug
