@@ -3,5 +3,5 @@ appsettings.Development.json
 
 docker-compose.yml
 
-bin/Debug
-obj/Debug
+bin/
+obj/
