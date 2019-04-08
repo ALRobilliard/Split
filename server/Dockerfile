@@ -1,4 +1,4 @@
-FROM microsoft/dotnet:sdk AS build-env
+FROM microsoft/dotnet:2.1-aspnetcore-runtime
 WORKDIR /app
 
 COPY . .
