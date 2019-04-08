@@ -23,7 +23,7 @@ namespace Split
 
       var configuration = builder.Build();
 
-      using (var db = new SplitContext(Environment.GetEnvironmentVariable("DB_CONNECTION_STRING")))
+      using (var db = new SplitContext(configuration.GetConnectionString("DefaultConnection")))
       {
         //Todo use db
       }

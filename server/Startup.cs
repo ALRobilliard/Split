@@ -28,7 +28,7 @@ namespace Split
     public Startup(IConfiguration configuration)
     {
       Configuration = configuration;
-      _dbConnectionString = Environment.GetEnvironmentVariable("DB_CONNECTION_STRING");
+      _dbConnectionString = Configuration.GetConnectionString("DefaultConnection");
     }
 
     public IConfiguration Configuration { get; }
