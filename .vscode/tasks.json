@@ -7,7 +7,7 @@
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}/split-api.csproj"
+                "${workspaceFolder}/split.csproj"
             ],
             "problemMatcher": "$tsc"
         },
@@ -17,7 +17,7 @@
             "type": "process",
             "args": [
                 "publish",
-                "${workspaceFolder}/split-api.csproj"
+                "${workspaceFolder}/split.csproj"
             ],
             "problemMatcher": "$tsc"
         },
@@ -28,7 +28,7 @@
             "args": [
                 "watch",
                 "run",
-                "${workspaceFolder}/split-api.csproj"
+                "${workspaceFolder}/split.csproj"
             ],
             "problemMatcher": "$tsc"
         }
