@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Split - Transactions</title>
+</head>
+<body>
+  <nav>
+    <ul class="nav-links">
+      <li class="nav-link">
+        <a href="./index.html">Home</a>
+      </li>
+      <li class="nav-link">
+        <a href="./accounts.html">Accounts</a>
+      </li>
+      <li class="nav-link">
+        <a href="./categories.html">Categories</a>
+      </li>
+      <li class="nav-link">
+        <a href="./transactionparties.html">Transaction Parties</a>
+      </li>
+      <li class="nav-link">
+        <a href="./transactions.html">Transactions</a>
+      </li>
+    </ul>
+  </nav>
+  <div class="container">
+    <h1>Add a Transaction</h1>
+    <form>
+      <label for="category">Category:</label>
+      <select name="category" id="category">
+        <option value="-1">---</option>
+      </select>
+      <br />
+      <label for="transactionParty">Transaction Party:</label>
+      <select name="transactionParty" id="transactionParty">
+        <option value="-1">---</option>
+      </select>
+      <br />
+      <label for="transactionType">Transaction Type:</label>
+      <select name="transactionType" id="transactionType">
+        <option value="0">Expense</option>
+        <option value="1">Income</option>
+        <option value="2">Transfer</option>
+      </select>
+      <br />
+      <label for="accountOut">Account Out:</label>
+      <select name="accountOut" id="accountOut">
+        <option value="-1">---</option>
+      </select>
+      <br />
+      <label for="accountIn">Account In:</label>
+      <select name="accountIn" id="accountIn">
+        <option value="-1">---</option>
+      </select>
+      <br />
+      <label for="amount">Amount:</label>
+      <input type="number" name="amount" id="amount">
+      <br />
+      <label for="isShared">Shared?:</label>
+      <input type="checkbox" name="isShared" id="isShared">
+      <br />
+      <label for="shares">Number of Shares:</label>
+      <input type="range" name="shares" id="shares" min="2" max="10" value="2">
+      <br />
+      <label for="payee">Payee:</label>
+      <select name="payee" id="payee">
+        <option value="-1">---</option>
+      </select>
+      <br />
+      <label for="payeeAmount">Payee Amount:</label>
+      <input type="number" name="payeeAmount" id="payeeAmount">
+      <br />
+      <label for="token">Auth Token:</label>
+      <input id="token" type="text" />
+      <br />
+      <button id="btnSubmit" type="button">Submit</button>
+    </form>
+  </div>
+</body>
+</html>

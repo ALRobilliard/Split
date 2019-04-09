@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Split - Transaction Parties</title>
+</head>
+<body>
+  <nav>
+    <ul class="nav-links">
+      <li class="nav-link">
+        <a href="./index.html">Home</a>
+      </li>
+      <li class="nav-link">
+        <a href="./accounts.html">Accounts</a>
+      </li>
+      <li class="nav-link">
+        <a href="./categories.html">Categories</a>
+      </li>
+      <li class="nav-link">
+        <a href="./transactionparties.html">Transaction Parties</a>
+      </li>
+      <li class="nav-link">
+        <a href="./transactions.html">Transactions</a>
+      </li>
+    </ul>
+  </nav>
+  <div class="container">
+    <h1>Add a Transaction Party</h1>
+    <form>
+      <label for="transactionPartyName">Transaction Party Name:</label>
+      <input id="transactionPartyName" type="text" />
+      <br />
+      <label for="defaultCategory">Default Category:</label>
+      <select name="defaultCategory" id="defaultCategory">
+        <option value="-1">---</option>
+      </select>
+      <br />
+      <label for="token">Auth Token:</label>
+      <input id="token" type="text" />
+      <br />
+      <button id="btnSubmit" type="button">Submit</button>
+    </form>
+  </div>
+</body>
+</html>
