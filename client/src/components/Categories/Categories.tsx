@@ -5,7 +5,7 @@ class Categories extends Component {
   render() {
     return (
       <div className="categories">
-        <span>Categories</span>
+        <h1 className="mainHeading">Categories</h1>
       </div>
     )
   }

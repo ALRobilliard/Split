@@ -5,7 +5,7 @@ class TransactionParties extends Component {
   render() {
     return (
       <div className="transactionParties">
-        <span>Transaction Parties</span>
+        <h1 className="mainHeading">Transaction Parties</h1>
       </div>
     )
   }

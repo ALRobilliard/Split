@@ -7,6 +7,10 @@
           box-shadow: 3px 0 4px 0 #888;
 }
 
+.sideNavigation .logoContainer {
+  height: 10rem;
+}
+
 .sideNavigation ul {
   list-style: none;
   margin: 0;
