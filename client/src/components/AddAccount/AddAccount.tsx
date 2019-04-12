@@ -8,7 +8,14 @@ class AddAccount extends Component {
       <div className="addAccount">
         <div className="headingDiv">
           <h1 className="mainHeading">Add New Account</h1>
-          <Link to="/accounts" className="close-wrapper"><button className="button button-close"><i className="fas fa-times-circle"></i></button></Link>
+        </div>
+        <div className="form">
+          <label htmlFor="accountName">Account Name:</label>
+          <input id="accountName" type="text"/>
+          <div className="form-actions">
+            <Link to="/accounts"><button className="button button-close">Cancel</button></Link>
+            <Link to="/accounts"><button className="button button-confirm">Create</button></Link>
+          </div>
         </div>
       </div>
     )

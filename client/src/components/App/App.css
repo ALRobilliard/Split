@@ -14,6 +14,7 @@
 .headingDiv {
   text-align: left;
   position: relative;
+  margin-bottom: 1rem;
 }
 
 .mainHeading {
@@ -27,12 +28,6 @@
   top: 0;
 }
 
-.close-wrapper {
-  position: absolute;
-  font-size: 2rem;
-  right: 0;
-}
-
 .button {
   border: 0.2rem solid #66bb6a;
   background: none;
@@ -44,10 +39,14 @@
   outline: none;
 }
 
+.button-confirm {
+  background-color: #66bb6a;
+  color: #ffffff;
+}
+
 .button-close {
-  border: none;
-  font-size: 2rem;
-  color: #666666
+  border-color: #f44336;
+  color: #f44336
 }
 
 .button i {
@@ -57,4 +56,40 @@
 .button:hover {
   opacity: 0.7;
   transition: opacity 0.2s;
+}
+
+.form {
+  margin: auto;
+  width: 100%;
+  background-color: #ffffff;
+  text-align: left;
+  box-sizing: border-box;
+  padding: 1rem;
+  border-radius: 5px;
+  -webkit-box-shadow: 3px 0 4px 0 #888;
+  box-shadow: 0 0 4px 0 #888;
+}
+
+.form label {
+  margin-right: 0.5rem;
+}
+
+.form input {
+  font-size: 1rem;
+}
+
+.form .form-actions {
+  border-top: 1px solid #dddddd;
+  box-sizing: border-box;
+  padding-top: 1rem;
+  margin-top: 3rem;
+  text-align: right;
+}
+
+.form .form-actions a {
+  margin-right: 1rem;
+}
+
+.form .form-actions a:last-of-type {
+  margin-right: 0;
 }
