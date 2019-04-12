@@ -93,3 +93,11 @@
 .form .form-actions a:last-of-type {
   margin-right: 0;
 }
+
+.form .form-line {
+  margin-bottom: 1rem;
+}
+
+.form .form-line:last-of-type {
+  margin-bottom: 0;
+}
