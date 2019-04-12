@@ -8,9 +8,53 @@
 .main {
   box-sizing: border-box;
   padding: 2rem;
+  background-color: #f0f0f0;
+}
+
+.headingDiv {
+  text-align: left;
+  position: relative;
 }
 
 .mainHeading {
-  float: left;
+  display: inline;
   color: #424242;
+  margin-right: 1rem;
+}
+
+.button-wrapper {
+  position: absolute;
+  top: 0;
+}
+
+.close-wrapper {
+  position: absolute;
+  font-size: 2rem;
+  right: 0;
+}
+
+.button {
+  border: 0.2rem solid #66bb6a;
+  background: none;
+  color: #66bb6a;
+  font-weight: bold;
+  font-size: 1rem;
+  padding: 0.5rem;
+  cursor: pointer;
+  outline: none;
+}
+
+.button-close {
+  border: none;
+  font-size: 2rem;
+  color: #666666
+}
+
+.button i {
+  margin-right: 0.5rem;
+}
+
+.button:hover {
+  opacity: 0.7;
+  transition: opacity 0.2s;
 }
