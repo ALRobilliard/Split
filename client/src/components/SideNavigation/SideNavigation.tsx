@@ -29,6 +29,9 @@ class SideNavigation extends Component {
             <li>
               <NavLink to="/settings"><button><i className="fas fa-cog"></i>Settings</button></NavLink>
             </li>
+            <li>
+              <NavLink to="/signin"><button><i className="fas fa-user"></i>Sign In</button></NavLink>
+            </li>
           </ul>
         </nav>
         <div className="footer">

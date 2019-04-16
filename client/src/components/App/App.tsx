@@ -6,6 +6,7 @@ import SideNavigation from '../SideNavigation/SideNavigation';
 import Accounts from '../Accounts/Accounts';
 import Categories from '../Categories/Categories';
 import Settings from '../Settings/Settings';
+import SignIn from '../SignIn/SignIn';
 import Transactions from '../Transactions/Transactions';
 import TransactionParties from '../TransactionParties/TransactionParties';
 import AddCategory from '../AddCategory/AddCategory';
@@ -30,6 +31,7 @@ class App extends Component {
               <Route path="/categories/add" component={AddCategory} />
               <Route path="/categories" component={Categories} />
               <Route path="/settings" component={Settings} />
+              <Route path="/signin" component={SignIn} />
               <Route path="/transactions/add" component={AddTransaction} />
               <Route path="/transactions" component={Transactions} />
               <Route path="/transactionparties/add" component={AddTransactionParty} />
