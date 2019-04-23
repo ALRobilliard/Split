@@ -1,9 +1,5 @@
 import React, { Component } from 'react';
 import './SignIn.css';
-import { Link, BrowserRouter as Router } from 'react-router-dom';
-import { connect } from 'react-redux';
-import { Dispatch } from 'redux';
-import { fetchUser } from '../../actions/userActions';
 
 class SignIn extends Component<{fetchUser: Function}> {
   componentWillMount() {
@@ -33,4 +29,4 @@ class SignIn extends Component<{fetchUser: Function}> {
   }
 }
 
-export default connect(null, { fetchUser })(SignIn);
+export default SignIn;
