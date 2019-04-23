@@ -1,7 +1,7 @@
 interface UserDto {
-  Id: string,
-  Username: string,
-  FirstName: string,
-  LastName: string,
-  Token: string
+  id: string,
+  username: string,
+  firstName: string,
+  lastName: string,
+  token: string
 }
