@@ -20,9 +20,26 @@ class App extends Component<IProps, IState> {
     this.state = {};
   }
 
-  setUser = (user: UserDto) => {
+  refreshUser = () => {
+    const user: UserDto = {
+      id: sessionStorage.getItem('userId') as string,
+      firstName: sessionStorage.getItem('userFirstName') as string,
+      lastName: sessionStorage.getItem('userLastName') as string,
+      username: sessionStorage.getItem('userUserName') as string,
+      token: sessionStorage.getItem('userToken') as string
+    };
+    debugger;
+    if (user.token == null) {
+      this.setState({});
+      return false;
+    }
+
     this.setState({ user });
-    return user != null;
+    return true;
+  }
+
+  componentDidMount() {
+    this.refreshUser();
   }
   
   render() {
@@ -33,7 +50,7 @@ class App extends Component<IProps, IState> {
             <SideNavigation user={this.state.user} />
           </div>
           <div className="main">
-            <RouterView user={this.state.user} setUser={this.setUser} />
+            <RouterView user={this.state.user} refreshUser={this.refreshUser} />
           </div>
         </Router>
       </div>

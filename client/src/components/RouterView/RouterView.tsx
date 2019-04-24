@@ -14,7 +14,7 @@ import AddTransaction from '../AddTransaction/AddTransaction';
 import AddTransactionParty from '../AddTransactionParty/AddTransactionParty';
 
 interface IProps {
-  setUser: Function,
+  refreshUser: Function,
   user?: UserDto
 }
 
@@ -39,7 +39,7 @@ class RouterView extends Component<IProps, IState> {
         <Route path="/settings" component={Settings} />
         <Route 
           path="/signin"
-          render={(props) => <SignIn {...props} setUser={this.props.setUser} />}
+          render={(props) => <SignIn {...props} refreshUser={this.props.refreshUser} />}
         />
         <Route path="/transactions/add" component={AddTransaction} />
         <Route path="/transactions" component={Transactions} />

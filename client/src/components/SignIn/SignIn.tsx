@@ -6,7 +6,7 @@ import { baseUrl } from '../../private/config';
 import { postData } from '../../helpers/utils';
 
 interface IProps {
-  setUser: Function
+  refreshUser: Function
 }
 
 interface IState {
@@ -32,7 +32,8 @@ class SignIn extends Component<IProps, IState> {
       Username: this.state.username,
       Password: this.state.password
     }).then(res => {
-      this.props.setUser(res);
+      this.setSessionStorage(res);
+      this.props.refreshUser();
 
       const state = this.state;
       this.setState({
@@ -41,6 +42,14 @@ class SignIn extends Component<IProps, IState> {
         redirect: true
       })
     })
+  }
+
+  setSessionStorage = (user: UserDto) => {
+    sessionStorage.setItem('userId', user.id);
+    sessionStorage.setItem('userFirstName', user.firstName);
+    sessionStorage.setItem('userLastName', user.lastName);
+    sessionStorage.setItem('userUsername', user.username);
+    sessionStorage.setItem('userToken', user.token);
   }
 
   userOnChange = (e: React.ChangeEvent<HTMLInputElement>) => this.setState({ username: e.target.value });
