@@ -29,8 +29,8 @@ namespace Split.Controllers
       _context = context;
     }
 
-    // GET: api/Categories/0
-    [HttpGet]
+    // GET: api/Categories/RetrieveByType/0
+    [HttpGet("RetrieveByType/{categoryType}")]
     public async Task<ActionResult<List<CategoryDto>>> GetCategories(int categoryType)
     {
       ClaimsIdentity identity = HttpContext.User.Identity as ClaimsIdentity;
