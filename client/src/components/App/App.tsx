@@ -38,7 +38,7 @@ class App extends Component<IProps, IState> {
     return true;
   }
 
-  componentDidMount() {
+  componentWillMount() {
     this.refreshUser();
   }
   
