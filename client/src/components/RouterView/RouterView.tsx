@@ -40,8 +40,14 @@ class RouterView extends Component<IProps, IState> {
           path="/accounts"
           render={(props) => <Accounts {...props} user={this.props.user} />}
         />
-        <Route path="/categories/add" component={AddCategory} />
-        <Route path="/categories" component={Categories} />
+        <Route 
+          path="/categories/add" 
+          render={(props) => <AddCategory {...props} user={this.props.user} />}
+        />
+        <Route 
+          path="/categories" 
+          render={(props) => <Categories {...props} user={this.props.user} />}
+        />
         <Route path="/settings" component={Settings} />
         <Route 
           path="/signin"

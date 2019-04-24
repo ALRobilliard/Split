@@ -5,6 +5,15 @@ interface AccountDto {
   modifiedOn: Date
 }
 
+interface CategoryDto {
+  categoryId: string,
+  categoryName: string,
+  createdOn: Date,
+  modifiedOn: Date,
+  userId: string,
+  categoryType: number
+}
+
 interface UserDto {
   id: string,
   username: string,
