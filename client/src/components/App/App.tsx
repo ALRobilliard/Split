@@ -28,7 +28,7 @@ class App extends Component<IProps, IState> {
       username: sessionStorage.getItem('userUserName') as string,
       token: sessionStorage.getItem('userToken') as string
     };
-    debugger;
+    
     if (user.token == null) {
       this.setState({});
       return false;
