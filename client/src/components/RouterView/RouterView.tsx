@@ -55,8 +55,14 @@ class RouterView extends Component<IProps, IState> {
         />
         <Route path="/transactions/add" component={AddTransaction} />
         <Route path="/transactions" component={Transactions} />
-        <Route path="/transactionparties/add" component={AddTransactionParty} />
-        <Route path="/transactionparties" component={TransactionParties} />
+        <Route 
+          path="/transactionparties/add" 
+          render={(props) => <AddTransactionParty {...props} user={this.props.user} />}
+        />
+        <Route 
+          path="/transactionparties" 
+          render={(props) => <TransactionParties {...props} user={this.props.user} />}
+        />
       </Switch>
     );
   }
