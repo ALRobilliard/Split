@@ -9,6 +9,16 @@
 
 .sideNavigation .logoContainer {
   height: 10rem;
+  position: relative;
+}
+
+.sideNavigation .logoContainer span {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  color: #ffffff;
+  font-size: 1.2rem;
 }
 
 .sideNavigation ul {
