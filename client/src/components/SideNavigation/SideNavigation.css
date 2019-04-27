@@ -1,0 +1,72 @@
+.sideNavigation {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(#66bb6a, #1b5e20);
+  position: relative;
+  -webkit-box-shadow: 3px 0 4px 0 #888;
+          box-shadow: 3px 0 4px 0 #888;
+}
+
+.sideNavigation .logoContainer {
+  height: 10rem;
+  position: relative;
+}
+
+.sideNavigation .logoContainer span {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  color: #ffffff;
+  font-size: 1.2rem;
+}
+
+.sideNavigation ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+}
+
+.sideNavigation ul li button {
+  cursor: pointer;
+  width: 100%;
+  height: 100%;
+  border: none;
+  outline: none;
+  background: none;
+  margin: 0;
+  padding: 1rem;
+  color: white;
+  font-size: 1rem;
+  opacity: 0.5;
+  text-align: left;
+  padding-left: 2rem;
+}
+
+.sideNavigation ul li button i {
+  margin-right: 1rem;
+  font-size: 1.2rem;
+  width: 1.5rem;
+}
+
+.sideNavigation ul li a.active button {
+  background: rgba(0, 0, 0, 0.2);
+  opacity: 1;
+}
+
+.sideNavigation ul li button:hover {
+  background: rgba(0, 0, 0, 0.1);
+  transition: background 0.2s;
+  opacity: 0.8;
+}
+
+.footer {
+  color: white;
+  position: absolute;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+  bottom: 5px;
+  padding: 0.5rem;
+}

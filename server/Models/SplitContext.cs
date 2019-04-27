@@ -90,6 +90,7 @@ namespace Split.Models
                   .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
         entity.Property(e => e.ModifiedOn)
+                  .HasColumnName("modifiedOn")
                   .HasColumnType("timestamp with time zone")
                   .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
