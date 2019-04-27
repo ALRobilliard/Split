@@ -132,6 +132,7 @@ class AddTransactionParty extends Component<IProps, IState> {
           </div>
           {this.state.defaultType > -1 ? <div className="form-line">
             <SearchDropdown 
+              labelText='Default Category:'
               entityList={this.state.availableCategories.map(category => {
                 return {
                   id: category.categoryId,

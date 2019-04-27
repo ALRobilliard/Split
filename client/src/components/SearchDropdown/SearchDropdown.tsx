@@ -5,7 +5,8 @@ import { setTimeout } from 'timers';
 interface IProps {
   selectedVal?: string,
   entityList: SearchEntity[],
-  setLookup: (lookupVal: SearchEntity) => void
+  setLookup: (lookupVal: SearchEntity) => void,
+  labelText?: string,
 }
 
 interface IState {
@@ -34,7 +35,10 @@ class SearchDropdown extends Component<IProps, IState> {
   render() {
     return (
       <div className="searchDropdown">
-        <label htmlFor="search">Default Category:</label>
+        {this.props.labelText ?
+          <label htmlFor="search">{this.props.labelText}</label> :
+          null
+        }
         <input 
           type="text" 
           name="search" 

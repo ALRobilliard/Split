@@ -53,8 +53,14 @@ class RouterView extends Component<IProps, IState> {
           path="/signin"
           render={(props) => <SignIn {...props} refreshUser={this.props.refreshUser} />}
         />
-        <Route path="/transactions/add" component={AddTransaction} />
-        <Route path="/transactions" component={Transactions} />
+        <Route 
+          path="/transactions/add" 
+          render={(props) => <AddTransaction {...props} user={this.props.user} />}
+        />
+        <Route 
+          path="/transactions" 
+          render={(props) => <Transactions {...props} user={this.props.user} />}
+        />
         <Route 
           path="/transactionparties/add" 
           render={(props) => <AddTransactionParty {...props} user={this.props.user} />}
