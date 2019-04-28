@@ -1,7 +1,10 @@
 interface AccountDto {
   accountId: string,
+  accountType: number,
   accountName: string,
+  balance: number,
   createdOn: Date,
+  limit: number,
   modifiedOn: Date
 }
 
@@ -26,9 +29,13 @@ interface SplitPaymentDto {
 interface TransactionDto {
   transactionId: string,
   categoryId?: string,
+  categoryName?: string,
   transactionPartyId?: string,
+  transactionPartyName?: string,
   accountInId?: string,
+  accountInName?: string,
   accountOutId?: string,
+  accountOutName?: string,
   amount?: number,
   isShared: boolean,
   transactionDate: Date,

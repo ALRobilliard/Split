@@ -89,7 +89,7 @@ class Transactions extends Component<IProps, IState> {
           </div>
           <ul className="entityList">
             {this.state.transactions.map((value, index) => {
-              return <li key={value.transactionId}>{moment(value.transactionDate).format('DD MMMM')} || {'$' + (value.amount != null ? value.amount : 0).toFixed(2)}</li>
+              return <li key={value.transactionId}>{moment(value.transactionDate).format('DD MMMM YYYY')} | {value.transactionPartyName} - {value.categoryName} | {'$' + (value.amount != null ? value.amount : 0).toFixed(2)}</li>
             })}
           </ul>
         </div>

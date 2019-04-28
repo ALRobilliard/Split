@@ -47,7 +47,7 @@ class Accounts extends Component<IProps, IState> {
         <div className="mainContent">
           <ul className="entityList">
             {this.state.accounts.map((value, index) => {
-              return <li key={value.accountId}>{value.accountName}</li>
+              return <li key={value.accountId}>{value.accountName} | {value.accountType == 0 ? 'Debit' : 'Credit'} | {value.balance ? '$' + value.balance.toFixed(2) : null} | {value.limit ? '$' + value.limit.toFixed(2) : null}</li>
             })}
           </ul>
         </div>
