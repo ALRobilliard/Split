@@ -42,7 +42,8 @@ class SearchDropdown extends Component<IProps, IState> {
         <input 
           type="text" 
           name="search" 
-          id="search" 
+          id="search"
+          autoComplete="off"
           value={this.props.selectedVal ? this.props.selectedVal : this.state.searchTerm}
           onChange={this.searchOnChange}
           onFocus={this.searchOnFocus}
