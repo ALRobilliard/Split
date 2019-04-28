@@ -200,7 +200,7 @@ class AddTransaction extends Component<IProps, IState> {
       accountInId = this.state.transactionType != 0 && this.state.selectedAccountInId ? this.state.selectedAccountInId : undefined,
       amount = this.state.amount && !isNaN(parseFloat(this.state.amount)) ? parseFloat(this.state.amount) : undefined,
       isShared = this.state.isShared ? this.state.isShared == 1 : undefined,
-      transactionDate = undefined;
+      transactionDate = this.state.transactionDate ? this.state.transactionDate : undefined;
 
     const transactionObj: TransactionPost = {
       CategoryId: categoryId,
