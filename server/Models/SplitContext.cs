@@ -53,10 +53,20 @@ namespace Split.Models
                   .HasColumnName("accountName")
                   .HasColumnType("character varying(20)");
 
+        entity.Property(e => e.AccountType).HasColumnName("accountType");
+
+        entity.Property(e => e.Balance)
+                  .HasColumnName("balance")
+                  .HasColumnType("money");
+
         entity.Property(e => e.CreatedOn)
                   .HasColumnName("createdOn")
                   .HasColumnType("timestamp with time zone")
                   .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+        entity.Property(e => e.Limit)
+                  .HasColumnName("limit")
+                  .HasColumnType("money");
 
         entity.Property(e => e.ModifiedOn)
                   .HasColumnName("modifiedOn")

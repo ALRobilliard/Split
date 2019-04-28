@@ -69,7 +69,7 @@ namespace Split.Controllers
 
     // POST: api/Accounts
     [HttpPost]
-    public async Task<ActionResult<AccountDto>> PostAccount([FromBody] string accountName)
+    public async Task<ActionResult<AccountDto>> PostAccount(AccountDto accountDto)
     {
       ClaimsIdentity identity = HttpContext.User.Identity as ClaimsIdentity;
       Guid? userId = identity.GetUserId();
@@ -78,16 +78,21 @@ namespace Split.Controllers
         return BadRequest("User ID unable to be retrieved from token.");
       }
 
-      Account account = new Account();
-      account.AccountName = accountName;
+      if (accountDto.AccountType < 0 || accountDto.AccountType > 1) {
+        return BadRequest("The provided Account Type is invalid");
+      }
 
       // Add owning user.
-      account.UserId = userId.Value;
+      accountDto.UserId = userId.Value;
 
+      Account account = _mapper.Map<Account>(accountDto);
+      
       _context.Account.Add(account);
       await _context.SaveChangesAsync();
 
-      AccountDto accountDto = _mapper.Map<AccountDto>(account);
+      // Refresh DTO.
+      accountDto = _mapper.Map<AccountDto>(account);
+
       return CreatedAtAction("GetAccount", new { Id = account.AccountId }, accountDto);
     }
 
