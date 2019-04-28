@@ -21,9 +21,9 @@ function transactionCompare(a: TransactionDto, b:TransactionDto) {
 
   let comparison = 0;
   if (transactionA > transactionB) {
-    comparison = 1;
-  } else if (transactionA < transactionB) {
     comparison = -1;
+  } else if (transactionA < transactionB) {
+    comparison = 1;
   }
 
   return comparison;
@@ -89,7 +89,7 @@ class Transactions extends Component<IProps, IState> {
           </div>
           <ul className="entityList">
             {this.state.transactions.map((value, index) => {
-              return <li key={value.transactionId}>{moment(value.transactionDate).format('DD/MM/YYYY')} || {'$' + (value.amount != null ? value.amount : 0).toFixed(2)}</li>
+              return <li key={value.transactionId}>{moment(value.transactionDate).format('DD MMMM')} || {'$' + (value.amount != null ? value.amount : 0).toFixed(2)}</li>
             })}
           </ul>
         </div>
