@@ -120,6 +120,21 @@ namespace Split.Controllers
       Transaction transaction = _mapper.Map<Transaction>(transactionDto);
 
       _context.Transaction.Add(transaction);
+
+      // Change AccountIn Balance.
+      if (transactionDto.AccountInId != null) {
+        Account accountIn = await _context.Account.FindAsync(transactionDto.AccountInId);
+        accountIn.Balance += transactionDto.Amount;
+        _context.Entry(accountIn).State = EntityState.Modified;
+      }
+
+      // Change AccountOut Balance.
+      if (transactionDto.AccountOutId != null) {
+        Account accountOut = await _context.Account.FindAsync(transactionDto.AccountOutId);
+        accountOut.Balance -= transactionDto.Amount;
+        _context.Entry(accountOut).State = EntityState.Modified;
+      }
+
       await _context.SaveChangesAsync();
 
       // Refresh DTO.
