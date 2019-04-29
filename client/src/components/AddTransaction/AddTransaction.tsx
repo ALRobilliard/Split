@@ -92,7 +92,7 @@ class AddTransaction extends Component<IProps, IState> {
       transactionParties: [],
       categories: [],
       accounts: [],
-      amount: '$0.00',
+      amount: '0.00',
       isShared: 0,
       redirect: false
     }
@@ -222,6 +222,7 @@ class AddTransaction extends Component<IProps, IState> {
 
   componentWillMount() {
     this.getTransactionParties();
+    this.getCategories();
     this.getAccounts();
   }
 
@@ -310,7 +311,7 @@ class AddTransaction extends Component<IProps, IState> {
             null
           }
           <div className="form-line">
-            <label htmlFor="amount">Amount:</label>
+            <label htmlFor="amount">Amount ($):</label>
             <input 
               id="amount" 
               type="text"
@@ -328,15 +329,19 @@ class AddTransaction extends Component<IProps, IState> {
           </div>
           <div className="form-line">
             <label htmlFor="isShared">Is Shared?:</label>
+            <label htmlFor="radioNo">No</label>
             <input 
-              type="radio" 
+              type="radio"
+              id="radioNo" 
               name="isShared" 
               value="0"
               checked={this.state.isShared === 0}
               onChange={this.isSharedOnChange}
             />
+            <label htmlFor="radioYes">Yes</label>
             <input 
               type="radio" 
+              id="radioYes"
               name="isShared" 
               value="1" 
               checked={this.state.isShared === 1}

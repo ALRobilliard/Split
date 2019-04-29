@@ -45,11 +45,31 @@ class Accounts extends Component<IProps, IState> {
           <Link to="/accounts/add" className="button-wrapper"><button className="button"><i className="fas fa-plus"></i>Add Account</button></Link>
         </div>
         <div className="mainContent">
-          <ul className="entityList">
-            {this.state.accounts.map((value, index) => {
-              return <li key={value.accountId}>{value.accountName} | {value.accountType == 0 ? 'Debit' : 'Credit'} | {value.balance ? '$' + value.balance.toFixed(2) : null} | {value.limit ? '$' + value.limit.toFixed(2) : null}</li>
-            })}
-          </ul>
+          <div className="dashboardList">
+            <h2 className="listHeading">My Accounts</h2>
+            <div className="separator"></div>
+            <table className="dataTable">
+              <thead>
+                <tr>
+                  <th>Account Name</th>
+                  <th>Account Type</th>
+                  <th>Limit</th>
+                  <th>Balance</th>
+                </tr>
+              </thead>
+              <tbody>
+              {this.state.accounts.map((value, index) => {
+              return (
+                <tr key={value.accountId}>
+                  <td>{value.accountName}</td>
+                  <td>{value.accountType == 0 ? 'Debit' : 'Credit'}</td>
+                  <td>{value.limit ? '$' + value.limit.toFixed(2) : '-'}</td>
+                  <td>{value.balance ? '$' + value.balance.toFixed(2) : '-'}</td>
+                </tr>
+              )})}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     )
