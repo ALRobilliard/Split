@@ -65,6 +65,7 @@ class AddAccount extends Component<IProps, IState> {
 
   render() {
     const redirect = this.state.redirect;
+    const validForm = this.state.accountName != '';
 
     if (redirect) {
       return <Redirect to="/accounts" />
@@ -103,7 +104,7 @@ class AddAccount extends Component<IProps, IState> {
           }
           <div className="form-actions">
             <Link to="/accounts"><button className="button button-close">Cancel</button></Link>
-            <a><button className="button button-confirm" onClick={this.postAccount}>Create</button></a>
+            <a><button className="button button-confirm" onClick={this.postAccount} disabled={!validForm}>Create</button></a>
           </div>
         </div>
       </div>

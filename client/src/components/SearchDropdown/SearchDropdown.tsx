@@ -11,7 +11,8 @@ interface IProps {
 
 interface IState {
   showList: boolean,
-  searchTerm: string
+  searchTerm: string,
+  validEntry: boolean
 }
 
 class SearchDropdown extends Component<IProps, IState> {
@@ -21,7 +22,8 @@ class SearchDropdown extends Component<IProps, IState> {
     super(props);
     this.state = {
       showList: false,
-      searchTerm: ''
+      searchTerm: '',
+      validEntry: true
     };
   }
   
@@ -30,7 +32,7 @@ class SearchDropdown extends Component<IProps, IState> {
     const callback = () => this.setState({ showList: false});
     setTimeout(callback, 200);
   }
-  searchOnChange = (e: React.ChangeEvent<HTMLInputElement>) => this.setState({ searchTerm: e.target.value }, () => this.props.setLookup({id: undefined, name: undefined}));
+  searchOnChange = (e: React.ChangeEvent<HTMLInputElement>) => this.setState({ searchTerm: e.target.value, validEntry: false }, () => this.props.setLookup({id: undefined, name: undefined}));
   
   render() {
     return (
@@ -48,6 +50,7 @@ class SearchDropdown extends Component<IProps, IState> {
           onChange={this.searchOnChange}
           onFocus={this.searchOnFocus}
           onBlur={this.searchOnBlur}
+          style={{borderColor: this.state.validEntry || this.state.searchTerm === '' ? 'unset' : '#f44336'}}
         />
         {this.state.showList ?
           <ul className="searchList">
@@ -61,7 +64,7 @@ class SearchDropdown extends Component<IProps, IState> {
                 return (
                   <li 
                     key={value.id}
-                    onClick={() => this.props.setLookup({ id: value.id, name: value.name})}
+                    onClick={() => {this.props.setLookup({ id: value.id, name: value.name}); this.setState({validEntry: true})}}
                   >{value.name}</li>)
               })
             }

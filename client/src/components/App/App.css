@@ -60,6 +60,16 @@
   color: #ffffff;
 }
 
+.button-confirm:disabled {
+  background-color: #999999;
+  border-color: #999999;
+  cursor: default;
+}
+
+.button-confirm:disabled:hover {
+  opacity: 1;
+}
+
 .button-close {
   border-color: #f44336;
   color: #f44336
