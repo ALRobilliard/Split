@@ -256,11 +256,7 @@ namespace Split.Models
         entity.HasIndex(e => e.Email)
                   .HasName("User_email_key")
                   .IsUnique();
-
-        entity.HasIndex(e => e.Username)
-                  .HasName("User_username_key")
-                  .IsUnique();
-
+                  
         entity.Property(e => e.UserId)
                   .HasColumnName("userId")
                   .HasDefaultValueSql("uuid_generate_v4()");
@@ -303,11 +299,6 @@ namespace Split.Models
         entity.Property(e => e.PasswordHash).HasColumnName("passwordHash");
 
         entity.Property(e => e.PasswordSalt).HasColumnName("passwordSalt");
-
-        entity.Property(e => e.Username)
-                  .IsRequired()
-                  .HasColumnName("username")
-                  .HasColumnType("character varying(20)");
       });
     }
   }
