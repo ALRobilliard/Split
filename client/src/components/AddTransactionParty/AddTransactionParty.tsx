@@ -102,6 +102,7 @@ class AddTransactionParty extends Component<IProps, IState> {
 
   render() {
     const redirect = this.state.redirect;
+    const validForm = this.state.partyName != '';
 
     if (redirect) {
       return <Redirect to="/transactionparties" />
@@ -145,7 +146,7 @@ class AddTransactionParty extends Component<IProps, IState> {
           </div>: null}
           <div className="form-actions">
             <Link to="/transactionparties"><button className="button button-close">Cancel</button></Link>
-            <a><button className="button button-confirm" onClick={this.postParty}>Create</button></a>
+            <a><button className="button button-confirm" onClick={this.postParty} disabled={!validForm}>Create</button></a>
           </div>
         </div>
       </div>

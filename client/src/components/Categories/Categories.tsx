@@ -15,6 +15,12 @@ interface IState {
   categoryType: number
 }
 
+const categoryTypes = [
+  'Expense',
+  'Income',
+  'Transfer'
+]
+
 function categoryCompare(a: CategoryDto, b: CategoryDto): number {
   const categoryA = a.categoryName.toUpperCase();
   const categoryB = b.categoryName.toUpperCase();
@@ -69,17 +75,37 @@ class Categories extends Component<IProps, IState> {
           <Link to="/categories/add" className="button-wrapper"><button className="button"><i className="fas fa-plus"></i>Add Category</button></Link>
         </div>
         <div className="mainContent">
-          <label htmlFor="categoryType">Category Type:</label>
-          <select name="categoryType" id="categoryType" onChange={this.categoryTypeOnChange}>
-            <option value="0">Expense</option>
-            <option value="1">Income</option>
-            <option value="2">Transfer</option>
-          </select>
-          <ul className="entityList">
-            {this.state.categories.map((value, index) => {
-              return <li key={value.categoryId}>{value.categoryName}</li>
-            })}
-          </ul>
+          <div className="form">
+            <div className="form-line">
+              <label htmlFor="categoryType">Category Type:</label>
+              <select name="categoryType" id="categoryType" onChange={this.categoryTypeOnChange}>
+                <option value="0">Expense</option>
+                <option value="1">Income</option>
+                <option value="2">Transfer</option>
+              </select>
+            </div>
+          </div>
+          <div className="dashboardList">
+            <h2 className="listHeading">My Categories</h2>
+            <div className="separator"></div>
+            <table className="dataTable">
+              <thead>
+                <tr>
+                  <th>Category Name</th>
+                  <th>Category Type</th>
+                </tr>
+              </thead>
+              <tbody>
+                {this.state.categories.map((value, index) => {
+                return (
+                  <tr key={value.categoryId}>
+                    <td>{value.categoryName}</td>
+                    <td>{categoryTypes[value.categoryType]}</td>
+                  </tr>
+                )})}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     )

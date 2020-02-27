@@ -59,10 +59,25 @@ class TransactionParties extends Component<IProps, IState> {
           <Link to="/transactionparties/add" className="button-wrapper"><button className="button"><i className="fas fa-plus"></i>Add Transaction Party</button></Link>
         </div>
         <div className="mainContent">
+          <div className="dashboardList">
+            <h2 className="listHeading">My Transaction Parties</h2>
+            <div className="separator"></div>
+            <table className="dataTable">
+              <thead>
+                <td>Party Name</td>
+              </thead>
+              <tbody>
+                {this.state.transactionParties.map((value, index) => {
+                  return (
+                    <tr key={value.transactionPartyId}>
+                      <td>{value.transactionPartyName}</td>
+                    </tr>
+                )})}
+              </tbody>
+            </table>
+          </div>
           <ul className="entityList">
-            {this.state.transactionParties.map((value, index) => {
-              return <li key={value.transactionPartyId}>{value.transactionPartyName}</li>
-            })}
+            
           </ul>
         </div>
       </div>
