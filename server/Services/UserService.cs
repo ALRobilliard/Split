@@ -8,10 +8,10 @@ namespace Split.Services
 {
   public interface IUserService
   {
-    User Authenticate(string username, string password);
+    User Authenticate(string email, string password);
     IEnumerable<User> GetAll();
     User GetById(Guid id);
-    User GetByUsername(string username);
+    User GetByEmail(string email);
     User Create(User user, string password);
     void Update(User user, string password = null);
     void Delete(Guid id);
@@ -26,14 +26,14 @@ namespace Split.Services
       _context = context;
     }
 
-    public User Authenticate(string username, string password)
+    public User Authenticate(string email, string password)
     {
-      if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
+      if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
         return null;
 
-      var user = _context.User.SingleOrDefault(x => x.Username == username);
+      var user = _context.User.SingleOrDefault(x => x.Email == email);
 
-      // check if username exists
+      // check if user email exists
       if (user == null)
         return null;
 
@@ -55,9 +55,9 @@ namespace Split.Services
       return _context.User.Find(id);
     }
 
-    public User GetByUsername(string username)
+    public User GetByEmail(string email)
     {
-      return _context.User.Where(u => u.Username.Equals(username)).Single();
+      return _context.User.Where(u => u.Email.Equals(email)).Single();
     }
 
     public User Create(User user, string password)
@@ -66,8 +66,8 @@ namespace Split.Services
       if (string.IsNullOrWhiteSpace(password))
         throw new AppException("Password is required");
 
-      if (_context.User.Any(x => x.Username == user.Username))
-        throw new AppException("Username \"" + user.Username + "\" is already taken");
+      if (_context.User.Any(x => x.Email == user.Email))
+        throw new AppException("Email \"" + user.Email + "\" is already taken");
 
       if (_context.User.Any(x => x.Email == user.Email))
         throw new AppException("Email \"" + user.Email + "\" is already in use by another account.");
@@ -91,17 +91,17 @@ namespace Split.Services
       if (user == null)
         throw new AppException("User not found");
 
-      if (userParam.Username != user.Username)
+      if (userParam.Email != user.Email)
       {
-        // username has changed so check if the new username is already taken
-        if (_context.User.Any(x => x.Username == userParam.Username))
-          throw new AppException("Username " + userParam.Username + " is already taken");
+        // Email has changed so check if the new email is already taken
+        if (_context.User.Any(x => x.Email == userParam.Email))
+          throw new AppException("Email " + userParam.Email + " is already taken");
       }
 
       // update user properties
       user.FirstName = userParam.FirstName;
       user.LastName = userParam.LastName;
-      user.Username = userParam.Username;
+      user.Email = userParam.Email;
 
       // update password if it was entered
       if (!string.IsNullOrWhiteSpace(password))
