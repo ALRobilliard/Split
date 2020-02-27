@@ -20,6 +20,8 @@ namespace Split.Helpers
       CreateMap<TransactionPartyDto, TransactionParty>();
       CreateMap<User, UserDto>();
       CreateMap<UserDto, User>();
+      CreateMap<UserContact, UserContactDto>();
+      CreateMap<UserContactDto, UserContact>();
     }
   }
 }

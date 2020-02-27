@@ -39,10 +39,10 @@ namespace Split.Controllers
     [HttpPost("authenticate")]
     public IActionResult Authenticate([FromBody]UserDto userDto)
     {
-      var user = _userService.Authenticate(userDto.Username, userDto.Password);
+      var user = _userService.Authenticate(userDto.Email, userDto.Password);
 
       if (user == null)
-        return BadRequest(new { message = "Username or password is incorrect" });
+        return BadRequest(new { message = "Email or password is incorrect" });
 
       var tokenHandler = new JwtSecurityTokenHandler();
       var key = Encoding.ASCII.GetBytes(_appSettings.Secret);
@@ -50,7 +50,7 @@ namespace Split.Controllers
       {
         Subject = new ClaimsIdentity(new Claim[]
           {
-            new Claim(ClaimTypes.Name, user.Username),
+            new Claim(ClaimTypes.Name, user.Email),
             new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString())
           }),
         Expires = DateTime.UtcNow.AddDays(7),
@@ -63,7 +63,7 @@ namespace Split.Controllers
       return Ok(new
       {
         Id = user.UserId,
-        Username = user.Username,
+        Email = user.Email,
         FirstName = user.FirstName,
         LastName = user.LastName,
         Token = tokenString
