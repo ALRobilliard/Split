@@ -57,6 +57,7 @@ class AddCategory extends Component<IProps, IState> {
 
   render() {
     const redirect = this.state.redirect;
+    const validForm = this.state.categoryName != '';
 
     if (redirect) {
       return <Redirect to="/categories" />
@@ -86,7 +87,7 @@ class AddCategory extends Component<IProps, IState> {
           </div>
           <div className="form-actions">
             <Link to="/categories"><button className="button button-close">Cancel</button></Link>
-            <a><button className="button button-confirm" onClick={this.postCategory}>Create</button></a>
+            <a><button className="button button-confirm" onClick={this.postCategory} disabled={!validForm}>Create</button></a>
           </div>
         </div>
       </div>

@@ -21,9 +21,9 @@ function transactionCompare(a: TransactionDto, b:TransactionDto) {
 
   let comparison = 0;
   if (transactionA > transactionB) {
-    comparison = 1;
-  } else if (transactionA < transactionB) {
     comparison = -1;
+  } else if (transactionA < transactionB) {
+    comparison = 1;
   }
 
   return comparison;
@@ -70,7 +70,7 @@ class Transactions extends Component<IProps, IState> {
         </div>
         <div className="mainContent">
           <div className="form">
-            <div className="form-line">
+            <div className="form-line inline">
               <label htmlFor="startDate">Start Date:</label>
               <input 
                 type="date" 
@@ -87,11 +87,44 @@ class Transactions extends Component<IProps, IState> {
               />
             </div>
           </div>
-          <ul className="entityList">
-            {this.state.transactions.map((value, index) => {
-              return <li key={value.transactionId}>{moment(value.transactionDate).format('DD/MM/YYYY')} || {'$' + (value.amount != null ? value.amount : 0).toFixed(2)}</li>
-            })}
-          </ul>
+          <div className="dashboardList">
+            <h2 className="listHeading">My Transactions</h2>
+            <div className="separator"></div>
+            <table className="dataTable">
+              <thead>
+                <tr>
+                  <td>Date</td>
+                  <td>Party</td>
+                  <td>Category</td>
+                  <td>Is Shared?</td>
+                  <td className="money">Amount ($)</td>
+                </tr>
+              </thead>
+              <tbody>
+                {this.state.transactions.map((value, index) => {
+                  let classes: string[] = ['money'];
+                  if (value.accountOutId && !value.accountInId) {
+                    classes.push('expense');
+                  } else if (!value.accountOutId && value.accountInId) {
+                    classes.push('income');
+                  } else {
+                    classes.push('transfer');
+                  }
+
+                  const isShared = value.isShared ? <i className="fas fa-check" style={{color: "#4caf50"}}></i> : <i className="fas fa-times" style={{color: "#f44336"}}></i>;
+
+                  return (
+                    <tr key={value.transactionId}>
+                      <td>{moment(value.transactionDate).format('DD MMMM')}</td>
+                      <td>{value.transactionPartyName}</td>
+                      <td>{value.categoryName}</td>
+                      <td>{isShared}</td>
+                      <td className={classes.join(" ")}>{(value.amount != null ? value.amount : 0).toFixed(2)}</td>
+                    </tr>
+                )})}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     )
