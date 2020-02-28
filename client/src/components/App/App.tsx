@@ -25,7 +25,7 @@ class App extends Component<IProps, IState> {
       id: sessionStorage.getItem('userId') as string,
       firstName: sessionStorage.getItem('userFirstName') as string,
       lastName: sessionStorage.getItem('userLastName') as string,
-      username: sessionStorage.getItem('userUserName') as string,
+      email: sessionStorage.getItem('userEmail') as string,
       token: sessionStorage.getItem('userToken') as string
     };
     

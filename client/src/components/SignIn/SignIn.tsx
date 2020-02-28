@@ -10,7 +10,7 @@ interface IProps {
 }
 
 interface IState {
-  username: string,
+  email: string,
   password: string,
   redirect: boolean
 }
@@ -21,7 +21,7 @@ class SignIn extends Component<IProps, IState> {
   constructor(props: IProps) {
     super(props);
     this.state = {
-      username: '',
+      email: '',
       password: '',
       redirect: false
     };
@@ -29,7 +29,7 @@ class SignIn extends Component<IProps, IState> {
 
   authUser = () => {
     postData(`${baseUrl}/api/users/authenticate`, {
-      Username: this.state.username,
+      Email: this.state.email,
       Password: this.state.password
     }).then(res => {
       this.setSessionStorage(res);
@@ -37,7 +37,7 @@ class SignIn extends Component<IProps, IState> {
 
       const state = this.state;
       this.setState({
-        username: state.username,
+        email: state.email,
         password: state.password,
         redirect: true
       })
@@ -48,11 +48,11 @@ class SignIn extends Component<IProps, IState> {
     sessionStorage.setItem('userId', user.id);
     sessionStorage.setItem('userFirstName', user.firstName);
     sessionStorage.setItem('userLastName', user.lastName);
-    sessionStorage.setItem('userUsername', user.username);
+    sessionStorage.setItem('userEmail', user.email);
     sessionStorage.setItem('userToken', user.token);
   }
 
-  userOnChange = (e: React.ChangeEvent<HTMLInputElement>) => this.setState({ username: e.target.value });
+  userOnChange = (e: React.ChangeEvent<HTMLInputElement>) => this.setState({ email: e.target.value });
   passwordOnChange = (e: React.ChangeEvent<HTMLInputElement>) => this.setState({ password: e.target.value });
 
   render() {
@@ -69,8 +69,8 @@ class SignIn extends Component<IProps, IState> {
         </div>
         <div className="form">
           <div className="form-line">
-            <label htmlFor="username">Username:</label>
-            <input id="username" type="text" name="username" onChange={this.userOnChange} />
+            <label htmlFor="email">Email:</label>
+            <input id="email" type="text" name="email" onChange={this.userOnChange} />
           </div>
           <div className="form-line">
             <label htmlFor="password">Password:</label>
