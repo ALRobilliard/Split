@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Split.Models;
+using Split.Extensions;
 
 namespace Split
 {
@@ -15,7 +16,10 @@ namespace Split
   {
     public static void Main(string[] args)
     {
-      CreateWebHostBuilder(args).Build().Run();
+      CreateWebHostBuilder(args)
+        .Build()
+        .MigrateDatabase<SplitContext>()
+        .Run();
 
       var builder = new ConfigurationBuilder()
             .SetBasePath(Directory.GetCurrentDirectory())
