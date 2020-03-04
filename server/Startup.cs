@@ -62,8 +62,8 @@ namespace Split
           OnTokenValidated = context =>
                 {
                   var userService = context.HttpContext.RequestServices.GetRequiredService<IUserService>();
-                  var username = context.Principal.Identity.Name;
-                  var user = userService.GetByUsername(username);
+                  var email = context.Principal.Identity.Name;
+                  var user = userService.GetByEmail(email);
                   if (user == null)
                   {
                     // Return unauthorized if user no longer exists.

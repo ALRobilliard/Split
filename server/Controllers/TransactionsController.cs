@@ -52,6 +52,30 @@ namespace Split.Controllers
         ).ToListAsync();
 
       List<TransactionDto> transactionDtos = _mapper.Map<List<TransactionDto>>(transactions);
+
+      // Set Linked Entity names for client access.
+      foreach(var transaction in transactionDtos) {
+        if (transaction.CategoryId != null) {
+          Category category = await _context.Category.FindAsync(transaction.CategoryId);
+          transaction.CategoryName = category.CategoryName;
+        }
+
+        if (transaction.TransactionPartyId != null) {
+          TransactionParty transactionParty = await _context.TransactionParty.FindAsync(transaction.TransactionPartyId);
+          transaction.TransactionPartyName = transactionParty.TransactionPartyName;
+        }
+
+        if (transaction.AccountInId != null) {
+          Account account = await _context.Account.FindAsync(transaction.AccountInId);
+          transaction.AccountInName = account.AccountName;
+        }
+
+        if (transaction.AccountOutId != null) {
+          Account account = await _context.Account.FindAsync(transaction.AccountOutId);
+          transaction.AccountOutName = account.AccountName;
+        }
+      };
+
       return transactionDtos;
     }
 
@@ -96,6 +120,21 @@ namespace Split.Controllers
       Transaction transaction = _mapper.Map<Transaction>(transactionDto);
 
       _context.Transaction.Add(transaction);
+
+      // Change AccountIn Balance.
+      if (transactionDto.AccountInId != null) {
+        Account accountIn = await _context.Account.FindAsync(transactionDto.AccountInId);
+        accountIn.Balance += transactionDto.Amount;
+        _context.Entry(accountIn).State = EntityState.Modified;
+      }
+
+      // Change AccountOut Balance.
+      if (transactionDto.AccountOutId != null) {
+        Account accountOut = await _context.Account.FindAsync(transactionDto.AccountOutId);
+        accountOut.Balance -= transactionDto.Amount;
+        _context.Entry(accountOut).State = EntityState.Modified;
+      }
+
       await _context.SaveChangesAsync();
 
       // Refresh DTO.
