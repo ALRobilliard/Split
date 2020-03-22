@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Switch, Route } from "react-router-dom";
+import { Switch, Route, Redirect } from "react-router-dom";
 
 import Accounts from '../Accounts/Accounts';
 import Categories from '../Categories/Categories';
@@ -29,6 +29,15 @@ class RouterView extends Component<IProps, IState> {
   }
 
   render() {
+    if (this.props.user == null && location.pathname != '/signin') {
+      return (
+        <Route 
+          path="/"
+          render={(props) => <SignIn {...props} refreshUser={this.props.refreshUser} />}
+        />
+      )
+    }
+
     return (
       <Switch>
         <Route exact path="/" component={Dashboard} />

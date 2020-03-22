@@ -1,9 +1,11 @@
 import React, { Component } from 'react';
 import './SideNavigation.css';
 import { Route, NavLink, BrowserRouter as Router } from 'react-router-dom';
+import { Redirect } from 'react-router-dom';
 
 interface IProps {
-  user?: UserDto
+  user?: UserDto,
+  clearUser: () => void;
 }
 
 interface IState {}
@@ -41,10 +43,13 @@ class SideNavigation extends Component<IProps, IState> {
         <li>
           <NavLink to="/settings"><button><i className="fas fa-cog"></i>Settings</button></NavLink>
         </li>
+        <li>
+          <button onClick={this.props.clearUser}><i className="fas fa-sign-out-alt"></i>Sign out</button>
+        </li>
       </ul> :
       <ul>
         <li>
-          <NavLink to="/signin"><button><i className="fas fa-user"></i>Sign In</button></NavLink>
+          <NavLink to="/signin"><button><i className="fas fa-sign-in-alt"></i>Sign In</button></NavLink>
         </li>
       </ul>
       

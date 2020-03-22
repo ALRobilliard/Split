@@ -30,12 +30,22 @@ class App extends Component<IProps, IState> {
     };
     
     if (user.token == null) {
-      this.setState({});
+      this.setState({ user: undefined});
       return false;
     }
 
     this.setState({ user });
     return true;
+  }
+
+  clearUser = () => {
+    sessionStorage.removeItem('userId');
+    sessionStorage.removeItem('userFirstName');
+    sessionStorage.removeItem('userLastName');
+    sessionStorage.removeItem('userEmail');
+    sessionStorage.removeItem('userToken');
+
+    this.refreshUser();
   }
 
   componentWillMount() {
@@ -47,7 +57,7 @@ class App extends Component<IProps, IState> {
       <div className="App">
         <Router>
           <div className="sidebar">
-            <SideNavigation user={this.state.user} />
+            <SideNavigation user={this.state.user} clearUser={this.clearUser} />
           </div>
           <div className="main">
             <RouterView user={this.state.user} refreshUser={this.refreshUser} />
