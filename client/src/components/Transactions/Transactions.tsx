@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import './Transactions.css';
 import { Link, BrowserRouter as Router } from 'react-router-dom';
 import moment from 'moment';
-import { getData } from '../../helpers/utils';
+import { getData, deleteData } from '../../helpers/utils';
 import { baseUrl } from '../../private/config';
 
 interface IProps {
@@ -54,6 +54,17 @@ class Transactions extends Component<IProps, IState> {
     })
   }
 
+  deleteTransaction = (transactionId: string, transactionDate: string, transactionAmount: string) => {
+    const deleteConfirmed = window.confirm(`Are you sure you want to delete transaction on '${transactionDate}', for '$${transactionAmount}'?`);
+    if (deleteConfirmed) {
+      const token = this.props.user != null ? this.props.user.token : '';
+      deleteData(`${baseUrl}/api/transactions/${transactionId}`, token)
+      .then((res) => {
+        this.getTransactions();
+      });
+    }
+  }
+
   componentWillMount() {
     this.getTransactions();
   }
@@ -93,11 +104,12 @@ class Transactions extends Component<IProps, IState> {
             <table className="dataTable">
               <thead>
                 <tr>
-                  <td>Date</td>
-                  <td>Party</td>
-                  <td>Category</td>
-                  <td>Is Shared?</td>
-                  <td className="money">Amount ($)</td>
+                  <th>Date</th>
+                  <th>Party</th>
+                  <th>Category</th>
+                  <th>Is Shared?</th>
+                  <th className="money">Amount ($)</th>
+                  <th></th>
                 </tr>
               </thead>
               <tbody>
@@ -120,6 +132,7 @@ class Transactions extends Component<IProps, IState> {
                       <td>{value.categoryName}</td>
                       <td>{isShared}</td>
                       <td className={classes.join(" ")}>{(value.amount != null ? value.amount : 0).toFixed(2)}</td>
+                      <td><button className="delete" onClick={() => this.deleteTransaction(value.transactionId, moment(value.transactionDate).format('DD MMMM'), (value.amount != null ? value.amount : 0).toFixed(2))}><i className="fas fa-trash"></i></button></td>
                     </tr>
                 )})}
               </tbody>

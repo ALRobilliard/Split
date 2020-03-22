@@ -3,7 +3,7 @@ import './Accounts.css';
 import { Link, BrowserRouter as Router } from 'react-router-dom';
 
 import { baseUrl } from '../../private/config';
-import { getData } from '../../helpers/utils';
+import { getData, deleteData } from '../../helpers/utils';
 
 interface IProps {
   user?: UserDto
@@ -33,6 +33,17 @@ class Accounts extends Component<IProps, IState> {
     });
   }
 
+  deleteAccount = (accountId: string, accountName: string) => {
+    const deleteConfirmed = window.confirm(`Are you sure you want to delete account '${accountName}'`);
+    if (deleteConfirmed) {
+      const token = this.props.user != null ? this.props.user.token : '';
+      deleteData(`${baseUrl}/api/accounts/${accountId}`, token)
+      .then((res) => {
+        this.retrieveAccounts();
+      });
+    }
+  }
+
   componentDidMount() {
     this.retrieveAccounts();
   }
@@ -55,6 +66,7 @@ class Accounts extends Component<IProps, IState> {
                   <th>Account Type</th>
                   <th>Limit</th>
                   <th>Balance</th>
+                  <th></th>
                 </tr>
               </thead>
               <tbody>
@@ -65,6 +77,7 @@ class Accounts extends Component<IProps, IState> {
                   <td>{value.accountType == 0 ? 'Debit' : 'Credit'}</td>
                   <td>{value.limit ? '$' + value.limit.toFixed(2) : '-'}</td>
                   <td>{value.balance ? '$' + value.balance.toFixed(2) : '-'}</td>
+                  <td><button className="delete" onClick={() => this.deleteAccount(value.accountId, value.accountName)}><i className="fas fa-trash"></i></button></td>
                 </tr>
               )})}
               </tbody>

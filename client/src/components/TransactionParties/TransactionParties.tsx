@@ -3,7 +3,7 @@ import './TransactionParties.css';
 import { Link } from 'react-router-dom';
 
 import { baseUrl } from '../../private/config';
-import { getData } from '../../helpers/utils';
+import { getData, deleteData } from '../../helpers/utils';
 
 interface IProps {
   user?: UserDto
@@ -47,6 +47,17 @@ class TransactionParties extends Component<IProps, IState> {
       })
   }
 
+  deleteTransactionParty = (transactionPartyId: string, transactionPartyName: string) => {
+    const deleteConfirmed = window.confirm(`Are you sure you want to delete Transaction Party '${transactionPartyName}'`);
+    if (deleteConfirmed) {
+      const token = this.props.user != null ? this.props.user.token : '';
+      deleteData(`${baseUrl}/api/transactionparties/${transactionPartyId}`, token)
+      .then((res) => {
+        this.retrieveTransactionParties();
+      });
+    }
+  }
+
   componentDidMount() {
     this.retrieveTransactionParties();
   }
@@ -64,13 +75,17 @@ class TransactionParties extends Component<IProps, IState> {
             <div className="separator"></div>
             <table className="dataTable">
               <thead>
-                <td>Party Name</td>
+                <tr>
+                  <th>Party Name</th>
+                  <th></th>
+                </tr>
               </thead>
               <tbody>
                 {this.state.transactionParties.map((value, index) => {
                   return (
                     <tr key={value.transactionPartyId}>
                       <td>{value.transactionPartyName}</td>
+                      <td><button className="delete" onClick={() => this.deleteTransactionParty(value.transactionPartyId, value.transactionPartyName)}><i className="fas fa-trash"></i></button></td>
                     </tr>
                 )})}
               </tbody>

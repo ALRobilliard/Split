@@ -3,8 +3,7 @@ import './Categories.css';
 import { Link, BrowserRouter as Router } from 'react-router-dom';
 
 import { baseUrl } from '../../private/config';
-import { getData } from '../../helpers/utils';
-import { stat } from 'fs';
+import { getData, deleteData } from '../../helpers/utils';
 
 interface IProps {
   user?: UserDto
@@ -63,6 +62,17 @@ class Categories extends Component<IProps, IState> {
     });
   }
 
+  deleteCategory = (categoryId: string, categoryName: string) => {
+    const deleteConfirmed = window.confirm(`Are you sure you want to delete category '${categoryName}'`);
+    if (deleteConfirmed) {
+      const token = this.props.user != null ? this.props.user.token : '';
+      deleteData(`${baseUrl}/api/categories/${categoryId}`, token)
+      .then((res) => {
+        this.retrieveCategories();
+      });
+    }
+  }
+
   componentDidMount() {
     this.retrieveCategories();
   }
@@ -93,6 +103,7 @@ class Categories extends Component<IProps, IState> {
                 <tr>
                   <th>Category Name</th>
                   <th>Category Type</th>
+                  <th></th>
                 </tr>
               </thead>
               <tbody>
@@ -101,6 +112,7 @@ class Categories extends Component<IProps, IState> {
                   <tr key={value.categoryId}>
                     <td>{value.categoryName}</td>
                     <td>{categoryTypes[value.categoryType]}</td>
+                    <td><button className="delete" onClick={() => this.deleteCategory(value.categoryId, value.categoryName)}><i className="fas fa-trash"></i></button></td>
                   </tr>
                 )})}
               </tbody>
