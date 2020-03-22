@@ -8,6 +8,11 @@ class Dashboard extends Component {
         <div className="headingDiv">
           <h1 className="mainHeading">Dashboard</h1>
         </div>
+        <div className="mainContent">
+          <div className="dashboardList">
+            <h2 className="listHeading">Coming soon.</h2>
+          </div>
+        </div>
       </div>
     )
   }
