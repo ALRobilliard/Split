@@ -28,6 +28,7 @@ function partyCompare(a: TransactionPartyDto, b: TransactionPartyDto): number {
 }
 
 class TransactionParties extends Component<IProps, IState> {
+  _isMounted = false;
   state: IState;
 
   constructor(props: IProps) {
@@ -41,9 +42,11 @@ class TransactionParties extends Component<IProps, IState> {
     const token = this.props.user != null ? this.props.user.token : '';
     getData(`${baseUrl}/api/transactionparties`, token)
       .then((res: TransactionPartyDto[]) => {
-        this.setState({
-          transactionParties: res.sort(partyCompare)
-        })
+        if (this._isMounted) {
+          this.setState({
+            transactionParties: res.sort(partyCompare)
+          });
+        }
       })
   }
 
@@ -58,8 +61,13 @@ class TransactionParties extends Component<IProps, IState> {
     }
   }
 
-  componentDidMount() {
+  componentWillMount() {
+    this._isMounted = true;
     this.retrieveTransactionParties();
+  }
+
+  componentWillUnmount() {
+    this._isMounted = false;
   }
 
   render() {

@@ -35,6 +35,7 @@ function categoryCompare(a: CategoryDto, b: CategoryDto): number {
 }
 
 class Categories extends Component<IProps, IState> {
+  _isMounted = false;
   state: IState;
 
   constructor(props: IProps) {
@@ -56,9 +57,11 @@ class Categories extends Component<IProps, IState> {
     const token = this.props.user != null ? this.props.user.token : '';
     getData(`${baseUrl}/api/categories/retrievebytype/${this.state.categoryType}`, token)
     .then((res: CategoryDto[]) => {
-      this.setState({
-        categories: res.sort(categoryCompare)
-      })
+      if (this._isMounted) {
+        this.setState({
+          categories: res.sort(categoryCompare)
+        });
+      }
     });
   }
 
@@ -73,8 +76,13 @@ class Categories extends Component<IProps, IState> {
     }
   }
 
-  componentDidMount() {
+  componentWillMount() {
+    this._isMounted = true;
     this.retrieveCategories();
+  }
+
+  componentWillUnmount() {
+    this._isMounted = false;
   }
 
   render() {

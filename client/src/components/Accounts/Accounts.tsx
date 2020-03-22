@@ -14,6 +14,7 @@ interface IState {
 }
 
 class Accounts extends Component<IProps, IState> {
+  _isMounted = false;
   state: IState;
 
   constructor(props: IProps) {
@@ -27,9 +28,11 @@ class Accounts extends Component<IProps, IState> {
     const token = this.props.user != null ? this.props.user.token : '';
     getData(`${baseUrl}/api/accounts`, token)
     .then((res: AccountDto[]) => {
-      this.setState({
-        accounts: res
-      })
+      if (this._isMounted) {
+        this.setState({
+          accounts: res
+        })
+      }
     });
   }
 
@@ -44,8 +47,13 @@ class Accounts extends Component<IProps, IState> {
     }
   }
 
-  componentDidMount() {
+  componentWillMount() {
+    this._isMounted = true;
     this.retrieveAccounts();
+  }
+
+  componentWillUnmount() {
+    this._isMounted = false;
   }
   
   render() {

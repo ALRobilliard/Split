@@ -30,6 +30,7 @@ function transactionCompare(a: TransactionDto, b:TransactionDto) {
 }
 
 class Transactions extends Component<IProps, IState> {
+  _isMounted = false;
   state: IState;
 
   constructor(props: IProps) {
@@ -48,9 +49,11 @@ class Transactions extends Component<IProps, IState> {
 
     getData(`${baseUrl}/api/transactions?startDate=${startDate}&endDate=${endDate}`, token)
     .then((res: TransactionDto[]) => {
-      this.setState({
-        transactions: res.sort(transactionCompare)
-      })
+      if (this._isMounted) {
+        this.setState({
+          transactions: res.sort(transactionCompare)
+        });
+      }
     })
   }
 
@@ -66,7 +69,12 @@ class Transactions extends Component<IProps, IState> {
   }
 
   componentWillMount() {
+    this._isMounted = true;
     this.getTransactions();
+  }
+
+  componentWillUnmount() {
+    this._isMounted = false;
   }
 
   startDateOnChange = (e: React.ChangeEvent<HTMLInputElement>) => this.setState({ startDate: new Date(e.target.value) })
