@@ -32,15 +32,19 @@ class SignIn extends Component<IProps, IState> {
       Email: this.state.email,
       Password: this.state.password
     }).then(res => {
-      this.setSessionStorage(res);
-      this.props.refreshUser();
-
-      const state = this.state;
-      this.setState({
-        email: state.email,
-        password: state.password,
-        redirect: true
-      })
+      if(res.message != null && res.message === 'Email or password is incorrect') {
+        window.alert(res.message);
+      } else {
+        this.setSessionStorage(res);
+        this.props.refreshUser();
+  
+        const state = this.state;
+        this.setState({
+          email: state.email,
+          password: state.password,
+          redirect: true
+        })
+      }
     })
   }
 
