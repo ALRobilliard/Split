@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -10,8 +9,8 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Split.Dtos;
 using Split.Extensions;
-using Split.Helpers;
 using Split.Models;
+using Split.Services;
 
 namespace Split.Controllers
 {
@@ -22,11 +21,13 @@ namespace Split.Controllers
   {
     private IMapper _mapper;
     private readonly SplitContext _context;
+    private readonly AccountService _accountService;
 
     public TransactionsController(IMapper mapper, SplitContext context)
     {
       _mapper = mapper;
       _context = context;
+      _accountService = new AccountService(context);
     }
 
     // GET: api/Transactions
@@ -120,21 +121,24 @@ namespace Split.Controllers
       Transaction transaction = _mapper.Map<Transaction>(transactionDto);
 
       _context.Transaction.Add(transaction);
-
-      // Change AccountIn Balance.
-      if (transactionDto.AccountInId != null) {
+      
+      // Process balance change.
+      if (transactionDto.AccountInId != null)
+      {
         Account accountIn = await _context.Account.FindAsync(transactionDto.AccountInId);
-        accountIn.Balance += transactionDto.Amount;
+        if (accountIn != null) {
+          accountIn.Balance = _accountService.AdjustAccountBalance(accountIn.Balance, transactionDto.Amount, accountIn.AccountType, false);
+        }
         _context.Entry(accountIn).State = EntityState.Modified;
       }
-
-      // Change AccountOut Balance.
-      if (transactionDto.AccountOutId != null) {
+      if (transactionDto.AccountOutId != null)
+      {
         Account accountOut = await _context.Account.FindAsync(transactionDto.AccountOutId);
-        accountOut.Balance -= transactionDto.Amount;
+        if (accountOut != null) {
+          accountOut.Balance = _accountService.AdjustAccountBalance(accountOut.Balance, transactionDto.Amount, accountOut.AccountType, true);
+        }
         _context.Entry(accountOut).State = EntityState.Modified;
       }
-
       await _context.SaveChangesAsync();
 
       // Refresh DTO.
@@ -177,6 +181,24 @@ namespace Split.Controllers
       transaction.IsShared = transactionDto.IsShared;
       transaction.ModifiedOn = DateTime.Now;
       _context.Entry(transaction).State = EntityState.Modified;
+
+      // Process balance change.
+      if (transactionDto.AccountInId != null)
+      {
+        Account accountIn = await _context.Account.FindAsync(transactionDto.AccountInId);
+        if (accountIn != null) {
+          accountIn.Balance = _accountService.AdjustAccountBalance(accountIn.Balance, transactionDto.Amount, accountIn.AccountType, false);
+        }
+        _context.Entry(accountIn).State = EntityState.Modified;
+      }
+      if (transactionDto.AccountOutId != null)
+      {
+        Account accountOut = await _context.Account.FindAsync(transactionDto.AccountOutId);
+        if (accountOut != null) {
+          accountOut.Balance = _accountService.AdjustAccountBalance(accountOut.Balance, transactionDto.Amount, accountOut.AccountType, true);
+        }
+        _context.Entry(accountOut).State = EntityState.Modified;
+      }
       await _context.SaveChangesAsync();
 
       return NoContent();
@@ -205,6 +227,25 @@ namespace Split.Controllers
       }
 
       _context.Remove(transaction);
+
+      // Process balance change.
+      if (transaction.AccountInId != null)
+      {
+        Account accountIn = await _context.Account.FindAsync(transaction.AccountInId);
+        if (accountIn != null) {
+          accountIn.Balance = _accountService.AdjustAccountBalance(accountIn.Balance, transaction.Amount, accountIn.AccountType, true);
+        }
+        _context.Entry(accountIn).State = EntityState.Modified;
+      }
+      if (transaction.AccountOutId != null)
+      {
+        Account accountOut = await _context.Account.FindAsync(transaction.AccountOutId);
+        if (accountOut != null) {
+          accountOut.Balance = _accountService.AdjustAccountBalance(accountOut.Balance, transaction.Amount, accountOut.AccountType, false);
+        }
+        _context.Entry(accountOut).State = EntityState.Modified;
+      }
+
       await _context.SaveChangesAsync();
 
       TransactionDto transactionDto = _mapper.Map<TransactionDto>(transaction);
